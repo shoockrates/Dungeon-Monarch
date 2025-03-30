@@ -19,7 +19,7 @@ int Room::id = 0;
 int Room::objectCount = 0;
 
 const int Room::width = 10;
-const int Room::hight = 20;
+const int Room::height = 20;
 const int Room::tileSize = 64;
 
 //===================================================
@@ -47,6 +47,15 @@ int Room::getUniqueID() {
 }
 int Room::getObjectCount() {
     return objectCount;
+}
+int Room::getWidth() {
+    return width;
+}
+int Room::getHeight() {
+    return height;
+}
+int Room::getTileSize() {
+    return tileSize;
 }
 
 //===================================================

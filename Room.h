@@ -15,7 +15,7 @@ private:
     static int objectCount;
 
     static const int width;
-    static const int hight;
+    static const int height;
     static const int tileSize;
 
     int level;
@@ -43,6 +43,10 @@ public:
     int getLevel();
     int getUniqueID();
     static int getObjectCount();
+
+    static int getWidth();
+    static int getHeight();
+    static int getTileSize();
     
     void setLevel(int level);
 
