@@ -14,6 +14,10 @@ private:
     static int id;
     static int objectCount;
 
+    static const int width;
+    static const int hight;
+    static const int tileSize;
+
     int level;
 
     bool isCleared;

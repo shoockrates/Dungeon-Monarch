@@ -18,6 +18,10 @@ using namespace std;
 int Room::id = 0;
 int Room::objectCount = 0;
 
+const int Room::width = 10;
+const int Room::hight = 20;
+const int Room::tileSize = 64;
+
 //===================================================
 
 Room::Room(int level, bool boss, bool start) {
