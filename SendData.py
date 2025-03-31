@@ -6,13 +6,11 @@ client = MongoClient("mongodb+srv://Peter:vx06051blveBaZ7T@cluster0.t9fms6j.mong
 import sys
 
 if len(sys.argv) < 2:
-    print("No name provided")
     sys.exit(1)
 
 name = sys.argv[1].strip()
 
 if not name:
-    print("Error: Name cannot be empty")
     sys.exit(1)
 
 try:
