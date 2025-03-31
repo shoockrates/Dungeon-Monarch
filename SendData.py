@@ -11,6 +11,9 @@ if len(sys.argv) < 2:
 name = ""
 
 for i in range(1, len(sys.argv)):
+    if i > 1:
+        name += " "
+        
     name += sys.argv[i].strip()
 
 if not name:
