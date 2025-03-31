@@ -12,7 +12,7 @@ int main() {
     int status = std::system(command.c_str());
     
     if (status == 0) {
-        std::cout<<"Successfully inserted "<<name_of_a_character<<std::endl;
+        std::cout<<"Successfully inserted \""<<name_of_a_character<<"\""<<std::endl;
     }
 
     if (status == 1) {
@@ -20,7 +20,7 @@ int main() {
     }
 
     if (status == 2) {
-        std::cout << "Error: The name already exists in the database" << std::endl;
+        std::cout << "Error: The name \""<<name_of_a_character<<"\" already exists in the database" << std::endl;
     }
     return 0;
 }
