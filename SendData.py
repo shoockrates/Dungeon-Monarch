@@ -7,8 +7,11 @@ import sys
 
 if len(sys.argv) < 2:
     sys.exit(1)
+    
+name = ""
 
-name = sys.argv[1].strip()
+for i in range(1, len(sys.argv)):
+    name += sys.argv[i].strip()
 
 if not name:
     sys.exit(1)
