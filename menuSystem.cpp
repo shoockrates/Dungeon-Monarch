@@ -1,30 +1,10 @@
-#include "Renderer.h"
-#include "UserInput.h"
-#include "Room.h"
 #include <iostream>
 #include <cstdlib>
 #include <string>
 
 #include <SDL3_ttf/SDL_ttf.h>
 
-const int WIDTH = 1000;
-const int HEIGHT = 1000;
-
-struct Button {
-    SDL_FRect rect;
-    SDL_Texture* texture;
-    std::string label;
-    bool isHovered = false;
-
-    Button(int x, int y, int w, int h, const std::string& lbl) {
-        rect.x = x;
-        rect.y = y;
-        rect.w = w;
-        rect.h = h;
-        texture = nullptr;
-        label = lbl;
-    }
-};
+#include "menuSystem.h"
 
 bool isMouseOver(SDL_FRect rect, int x, int y) {
     return (x >= rect.x && x <= rect.x + rect.w &&
@@ -72,11 +52,11 @@ void renderButton(SDL_Renderer* renderer, Button& button, TTF_Font* font, SDL_Co
     button.texture = textTexture; // save the new texture for cleanup
 }
 
-int main() {
+int gameMenu() {
 
     if (SDL_Init(SDL_INIT_VIDEO) == false || TTF_Init() == false) {
-        std::cerr << "SDL Init Failed: " << SDL_GetError() << endl;
-        return 1;
+        std::cerr << "SDL Init Failed: " << SDL_GetError() << std::endl;
+        return -1;
     }
 
     SDL_Window* window = SDL_CreateWindow("Game Menu", WIDTH, HEIGHT, SDL_WINDOW_RESIZABLE);
@@ -84,8 +64,8 @@ int main() {
 
     TTF_Font* font = TTF_OpenFont("assets/font.ttf", 48);
     if (!font) {
-        std::cerr << "Font load failed." << endl;
-        return 1;
+        std::cerr << "Font load failed." << std::endl;
+        return -1;
     }
 
     SDL_Color white = {255, 255, 255};
@@ -141,8 +121,6 @@ int main() {
                     }
                 }
             }
-
-            SDL_Delay(16);
         }
 
         // Check if mouse is hovering over each button
@@ -159,11 +137,10 @@ int main() {
             }
         } else {
             // HERE GOES THE GAME
-            // Draw game screen
-            SDL_SetRenderDrawColor(renderer, 0, 100, 100, 255);
-            SDL_RenderClear(renderer);
+            return 1;
         }
 
+        SDL_Delay(16);
         SDL_RenderPresent(renderer);
     }
 
