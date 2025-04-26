@@ -36,7 +36,7 @@ public:
     /**
      * Polls SDL events and updates input state.
      */
-    void collectUserInput();
+    void collectInput();
 
     bool isWPressed() const;
     bool isAPressed() const;
