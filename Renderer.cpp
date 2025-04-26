@@ -98,6 +98,10 @@ void Renderer::present() {
     SDL_RenderPresent(renderer);
 }
 
+void Renderer::clear() {
+    SDL_RenderClear(renderer);
+}
+
 std::string Renderer::toString() const {
     std::stringstream oss;
     oss << "Window: " << (window ? "ok" : "null")
