@@ -16,13 +16,6 @@ void renderButton(SDL_Renderer* renderer, Button& button, TTF_Font* font, SDL_Co
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderFillRect(renderer, &button.rect);
 
-    // Hover effect (change color on hover)
-    if (button.isHovered) {
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(renderer, hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a);
-        SDL_RenderFillRect(renderer, &button.rect);
-    }
-
     // Render button text
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, button.label.c_str(), button.label.size(), textColor);
     if (!textSurface) return;
@@ -47,20 +40,24 @@ void renderButton(SDL_Renderer* renderer, Button& button, TTF_Font* font, SDL_Co
     // Render text
     SDL_RenderTexture(renderer, textTexture, nullptr, &dstFRect);
 
+    // Hover effect (change color on hover)
+    if (button.isHovered) {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer, hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a);
+        SDL_RenderFillRect(renderer, &dstFRect);
+    }
+
     // Free old texture if needed
     if (button.texture) SDL_DestroyTexture(button.texture);
     button.texture = textTexture; // save the new texture for cleanup
 }
 
-int gameMenu() {
+int loadMenu(SDL_Window* window, SDL_Renderer* renderer, int *width, int *height) {
 
     if (SDL_Init(SDL_INIT_VIDEO) == false || TTF_Init() == false) {
         std::cerr << "SDL Init Failed: " << SDL_GetError() << std::endl;
         return -1;
     }
-
-    SDL_Window* window = SDL_CreateWindow("Game Menu", WIDTH, HEIGHT, SDL_WINDOW_RESIZABLE);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
 
     TTF_Font* font = TTF_OpenFont("assets/font.ttf", 48);
     if (!font) {
@@ -75,12 +72,9 @@ int gameMenu() {
     bool inMenu = true;
 
     std::vector<Button> buttons;
-    buttons.emplace_back(WIDTH / 2 - 150.0f, HEIGHT / 2 - 100.0f, 300.0f, 50.0f, "Start Game");
-    buttons.emplace_back(WIDTH / 2 - 150.0f, HEIGHT / 2, 300.0f, 50.0f, "Options");
-    buttons.emplace_back(WIDTH / 2 - 150.0f, HEIGHT / 2 + 100.0f, 300.0f, 50.0f, "Quit");
-
-    int width = WIDTH;
-    int height = HEIGHT;
+    buttons.emplace_back(*width / 2 - 150.0f, *height / 2 - 100.0f, 300.0f, 50.0f, "Start Game");
+    buttons.emplace_back(*width / 2 - 150.0f, *height / 2, 300.0f, 50.0f, "Options");
+    buttons.emplace_back(*width / 2 - 150.0f, *height / 2 + 100.0f, 300.0f, 50.0f, "Quit");
 
     int newWidth, newHeight;
     SDL_Event e;
@@ -91,15 +85,15 @@ int gameMenu() {
 
         // checks if window size changed and adapts
         SDL_GetWindowSize(window, &newWidth, &newHeight);
-        if (newWidth != width || newHeight != height) {
-            width = newWidth;
-            height = newHeight;
+        if (newWidth != *width || newHeight != *height) {
+            *width = newWidth;
+            *height = newHeight;
             for(int i = 0; i < 3; ++i) {
                 buttons.pop_back();
             }
-            buttons.emplace_back(width / 2 - 150.0f, height / 2 - 100.0f, 300.0f, 50.0f, "Start Game");
-            buttons.emplace_back(width / 2 - 150.0f, height / 2, 300.0f, 50.0f, "Options");
-            buttons.emplace_back(width / 2 - 150.0f, height / 2 + 100.0f, 300.0f, 50.0f, "Quit");
+            buttons.emplace_back(*width / 2 - 150.0f, *height / 2 - 100.0f, 300.0f, 50.0f, "Start Game");
+            buttons.emplace_back(*width / 2 - 150.0f, *height / 2, 300.0f, 50.0f, "Options");
+            buttons.emplace_back(*width / 2 - 150.0f, *height / 2 + 100.0f, 300.0f, 50.0f, "Quit");
         }
 
         while (SDL_PollEvent(&e)) {
@@ -137,11 +131,22 @@ int gameMenu() {
             }
         } else {
             // HERE GOES THE GAME
-            return 1;
+            break;
         }
 
         SDL_Delay(16);
         SDL_RenderPresent(renderer);
+    }
+
+    // Clean up
+    for (size_t i = 0; i < buttons.size(); ++i) {
+        SDL_DestroyTexture(buttons[i].texture);
+    }
+
+    TTF_CloseFont(font);
+    
+    if (!inMenu) {
+        return 1;
     }
 
 	return 0;

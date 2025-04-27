@@ -4,9 +4,6 @@
 
 #include <SDL3_ttf/SDL_ttf.h>
 
-const int WIDTH = 1000;
-const int HEIGHT = 1000;
-
 struct Button {
     SDL_FRect rect;
     SDL_Texture* texture;
@@ -30,7 +27,7 @@ struct Button {
  * 1 if started the game;
  * 0 if quit
  */
-int gameMenu();
+int loadMenu(SDL_Window* window, SDL_Renderer* renderer, int *width, int *height);
 
 bool isMouseOver(SDL_FRect rect, int x, int y);
 void renderButton(SDL_Renderer* renderer, Button& button, TTF_Font* font, SDL_Color textColor, SDL_Color hoverColor);
