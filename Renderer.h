@@ -44,6 +44,7 @@ public:
     SDL_Window* getWindow() const;
     SDL_Renderer* getRenderer() const;
     static int getObjectCount();
+    SDL_Renderer* getSDLRenderer();
 
     void setWindow(SDL_Window* newWindow);
     void setRenderer(SDL_Renderer* newRenderer);
@@ -73,6 +74,11 @@ public:
      * Presents the rendered frame to the screen.
      */
     void present();
+
+    /**
+    * Clears old sprites. Use before drawing anything new otherwise you might get weird image rendering.
+    */
+    void clear();
 
     /**
      * Returns a string summary of renderer state.

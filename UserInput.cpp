@@ -10,7 +10,7 @@ UserInput::~UserInput() {
     objectCount--;
 }
 
-void UserInput::collectUserInput() {
+void UserInput::collectInput() {
     quitRequested = false;
 
     SDL_Event event;

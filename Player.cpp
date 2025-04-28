@@ -86,12 +86,12 @@ void Player::init(const std::string& n, int hp, int atk, int spd, int startX, in
 }
 
 void Player::moveUp() {
-    y += speed;
+    y -= speed;
     //std::cout << name << " moved up to (" << x << ", " << y << ")\n";
 }
 
 void Player::moveDown() {
-    y -= speed;
+    y += speed;
     //std::cout << name << " moved down to (" << x << ", " << y << ")\n";
 }
 
@@ -103,6 +103,38 @@ void Player::moveRight() {
 void Player::moveLeft() {
     x -= speed;
     //std::cout << name << " moved left to (" << x << ", " << y << ")\n";
+}
+
+void Player::moveWithCollision(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize) {
+    int playerWidth  = tileSize;
+    int playerHeight = tileSize;
+
+    // first try horizontal
+    tryMoveAxis(dx, 0, map, tileSize, playerWidth, playerHeight);
+    // then vertical
+    tryMoveAxis(0, dy, map, tileSize, playerWidth, playerHeight);
+}
+
+void Player::tryMoveAxis(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize, int playerWidth, int playerHeight) {
+    int newX = x + dx, newY = y + dy;
+    int leftTile   = newX / tileSize;
+    int rightTile  = (newX + playerWidth  - 1) / tileSize;
+    int topTile    = newY / tileSize;
+    int bottomTile = (newY + playerHeight - 1) / tileSize;
+
+    if (topTile >= 0 && bottomTile < (int)map.size() &&
+        leftTile >= 0 && rightTile < (int)map[0].size())
+    {
+        // only if all four corners are free
+        bool canMove = (map[topTile][leftTile]   == 1) &&
+                       (map[topTile][rightTile]  == 1) &&
+                       (map[bottomTile][leftTile]== 1) &&
+                       (map[bottomTile][rightTile]==1);
+
+        if (canMove) {
+            x = newX;  y = newY;
+        }
+    }
 }
 
 void Player::takeDamage(int dmg) {

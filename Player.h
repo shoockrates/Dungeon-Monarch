@@ -3,6 +3,7 @@
 
 #include <string>
 //#include "Enemy.h"
+#include "Map.h"
 
 class Enemy;
 
@@ -35,6 +36,8 @@ public:
     void moveDown();
     void moveRight();
     void moveLeft();
+    void moveWithCollision(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize);
+    void tryMoveAxis(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize, int playerWidth, int playerHeight);
     void takeDamage(int dmg);
     void heal(int amount);
     void attack(Enemy &enemy);

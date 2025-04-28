@@ -35,6 +35,11 @@ int Renderer::getObjectCount() {
     return objectCount;
 }
 
+SDL_Renderer* Renderer::getSDLRenderer() {
+    return renderer;
+}
+
+
 void Renderer::setWindow(SDL_Window* newWindow) {
     window = newWindow;
 }
@@ -96,6 +101,10 @@ void Renderer::drawSprite(SDL_Texture* texture, int x, int y, int width, int hei
 
 void Renderer::present() {
     SDL_RenderPresent(renderer);
+}
+
+void Renderer::clear() {
+    SDL_RenderClear(renderer);
 }
 
 std::string Renderer::toString() const {
