@@ -10,7 +10,12 @@ int main() {
     SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
 
     StartMenu startMenu(window, renderer, &width, &height);
-    startMenu.run();
+    
+    if (startMenu.run()) {
+        std::cout << "Player pressed start game" << std::endl;
+    } else {
+        std::cout << "Player closed the game" << std::endl;
+    }
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
