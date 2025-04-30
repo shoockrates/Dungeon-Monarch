@@ -10,7 +10,6 @@
 
 #include "Map.h"
 #include <vector>
-
 /*
  * TODO:
  * - Integrate menu system 
