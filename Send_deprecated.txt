@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 
+// This program is no longer in use and was used for a demonstration
+
 int main() {
     std::string name_of_a_character = "";
 
