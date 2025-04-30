@@ -75,6 +75,11 @@ public:
     void present();
 
     /**
+    * Clears old sprites. Use before drawing anything new otherwise you might get weird image rendering.
+    */
+    void clear();
+
+    /**
      * Returns a string summary of renderer state.
      */
     std::string toString() const;

@@ -86,12 +86,12 @@ void Player::init(const std::string& n, int hp, int atk, int spd, int startX, in
 }
 
 void Player::moveUp() {
-    y += speed;
+    y -= speed;
     //std::cout << name << " moved up to (" << x << ", " << y << ")\n";
 }
 
 void Player::moveDown() {
-    y -= speed;
+    y += speed;
     //std::cout << name << " moved down to (" << x << ", " << y << ")\n";
 }
 
