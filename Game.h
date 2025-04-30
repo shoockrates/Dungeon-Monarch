@@ -76,6 +76,7 @@ public:
     const Renderer& getRenderer() const;
     UserInput& getUserInput();
     const UserInput& getUserInput() const;
+    std::vector<Enemy>& getEnemies() { return enemies; }
     Room& getRoom();
     const Room& getRoom() const;
 private:
@@ -90,6 +91,7 @@ private:
 
     Player player = Player("Placeholder", 100, 10, 5, 64, 64);
     Renderer renderer = Renderer(Room::getWidth(), Room::getHeight(), Room::getTileSize());
+    std::vector<Enemy> enemies;
     UserInput userInput;
     Room room = Room(0, false, true);
 
