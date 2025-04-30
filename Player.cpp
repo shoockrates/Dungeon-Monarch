@@ -105,6 +105,38 @@ void Player::moveLeft() {
     //std::cout << name << " moved left to (" << x << ", " << y << ")\n";
 }
 
+void Player::moveWithCollision(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize) {
+    int playerWidth  = tileSize;
+    int playerHeight = tileSize;
+
+    // first try horizontal
+    tryMoveAxis(dx, 0, map, tileSize, playerWidth, playerHeight);
+    // then vertical
+    tryMoveAxis(0, dy, map, tileSize, playerWidth, playerHeight);
+}
+
+void Player::tryMoveAxis(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize, int playerWidth, int playerHeight) {
+    int newX = x + dx, newY = y + dy;
+    int leftTile   = newX / tileSize;
+    int rightTile  = (newX + playerWidth  - 1) / tileSize;
+    int topTile    = newY / tileSize;
+    int bottomTile = (newY + playerHeight - 1) / tileSize;
+
+    if (topTile >= 0 && bottomTile < (int)map.size() &&
+        leftTile >= 0 && rightTile < (int)map[0].size())
+    {
+        // only if all four corners are free
+        bool canMove = (map[topTile][leftTile]   == 1) &&
+                       (map[topTile][rightTile]  == 1) &&
+                       (map[bottomTile][leftTile]== 1) &&
+                       (map[bottomTile][rightTile]==1);
+
+        if (canMove) {
+            x = newX;  y = newY;
+        }
+    }
+}
+
 void Player::takeDamage(int dmg) {
     health -= dmg;
     //std::cout << name << " took " << dmg << " damage. Health: " << health << std::endl;

@@ -1,11 +1,15 @@
 #include "Game.h"
 
+//std::vector<std::vector<int>> map = loadMap("map.txt");
+Map map;
 
 //Current images for testing and can be changed
 Game::Game(){
+	map.loadMap("map.txt");
 	try {
 		sprites.tileTexture = renderer.loadSprite("assets/test.bmp");
 		sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
+		sprites.groundTexture = renderer.loadSprite("assets/ground.bmp");
 	}
 	catch (const std::exception& e) {
 		SDL_Log("Sprite loading failed: %s", e.what());
@@ -16,6 +20,7 @@ Game::Game(){
 Game::~Game() {
 	SDL_DestroyTexture(sprites.tileTexture);
 	SDL_DestroyTexture(sprites.playerTexture);
+	SDL_DestroyTexture(sprites.groundTexture);
 	SDL_Quit();
 }
 
@@ -29,7 +34,14 @@ void Game::run(){
 		}
 		renderer.clear();
 		renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
-		renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 100, 100);
+		//renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 100, 100);
+		/*renderer.drawSprite(sprites.groundTexture, 0, 0, 30, 30);
+		renderer.drawSprite(sprites.groundTexture, 100, 0, 30, 30);
+		renderer.drawSprite(sprites.groundTexture, 0, 100, 30, 30);
+		renderer.drawSprite(sprites.groundTexture, 100, 100, 30, 30);*/
+		map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
+		renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
+
 		renderer.present();
 		frameTime = SDL_GetTicks() - frameStart;
 
@@ -44,16 +56,20 @@ void Game::killEntity(int entityId) {};
 
 void Game::handleEvents() {
 	if (userInput.isWPressed()) {
-		player.moveUp();
+		player.moveWithCollision(0, -(player.getSpeed()), map.getMap(), 64);
+		//player.moveUp();
 	}
 	if (userInput.isAPressed()) {
-		player.moveLeft();
+		player.moveWithCollision(-player.getSpeed(), 0, map.getMap(), 64);
+		//player.moveLeft();
 	}
 	if (userInput.isSPressed()) {
-		player.moveDown();
+		player.moveWithCollision(0, player.getSpeed(), map.getMap(), 64);
+		//player.moveDown();
 	}
 	if (userInput.isDPressed()) {
-		player.moveRight();
+		player.moveWithCollision(player.getSpeed(), 0, map.getMap(), 64);
+		//player.moveRight();
 	}
 }
 

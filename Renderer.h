@@ -44,6 +44,7 @@ public:
     SDL_Window* getWindow() const;
     SDL_Renderer* getRenderer() const;
     static int getObjectCount();
+    SDL_Renderer* getSDLRenderer();
 
     void setWindow(SDL_Window* newWindow);
     void setRenderer(SDL_Renderer* newRenderer);

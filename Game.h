@@ -8,6 +8,8 @@
 #include "Room.h"
 #include "Sprites.h"
 
+#include "Map.h"
+#include <vector>
 /*
  * TODO:
  * - Integrate menu system 
@@ -86,7 +88,7 @@ private:
 
     bool running = true;
 
-    Player player = Player("Placeholder", 100, 10, 10, 0, 0);
+    Player player = Player("Placeholder", 100, 10, 5, 64, 64);
     Renderer renderer = Renderer(Room::getWidth(), Room::getHeight(), Room::getTileSize());
     UserInput userInput;
     Room room = Room(0, false, true);

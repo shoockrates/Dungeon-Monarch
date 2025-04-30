@@ -35,6 +35,11 @@ int Renderer::getObjectCount() {
     return objectCount;
 }
 
+SDL_Renderer* Renderer::getSDLRenderer() {
+    return renderer;
+}
+
+
 void Renderer::setWindow(SDL_Window* newWindow) {
     window = newWindow;
 }
