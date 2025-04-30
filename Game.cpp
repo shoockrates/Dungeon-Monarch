@@ -1,8 +1,11 @@
 #include "Game.h"
 
-std::vector<std::vector<int>> map = loadMap("map.txt");
+//std::vector<std::vector<int>> map = loadMap("map.txt");
+Map map;
+
 //Current images for testing and can be changed
 Game::Game(){
+	map.loadMap("map.txt");
 	try {
 		sprites.tileTexture = renderer.loadSprite("assets/test.bmp");
 		sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
@@ -36,7 +39,7 @@ void Game::run(){
 		renderer.drawSprite(sprites.groundTexture, 100, 0, 30, 30);
 		renderer.drawSprite(sprites.groundTexture, 0, 100, 30, 30);
 		renderer.drawSprite(sprites.groundTexture, 100, 100, 30, 30);*/
-		renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, map, 64);
+		map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
 		renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
 
 		renderer.present();
@@ -53,19 +56,19 @@ void Game::killEntity(int entityId) {};
 
 void Game::handleEvents() {
 	if (userInput.isWPressed()) {
-		player.moveWithCollision(0, -(player.getSpeed()), map, 64);
+		player.moveWithCollision(0, -(player.getSpeed()), map.getMap(), 64);
 		//player.moveUp();
 	}
 	if (userInput.isAPressed()) {
-		player.moveWithCollision(-player.getSpeed(), 0, map, 64);
+		player.moveWithCollision(-player.getSpeed(), 0, map.getMap(), 64);
 		//player.moveLeft();
 	}
 	if (userInput.isSPressed()) {
-		player.moveWithCollision(0, player.getSpeed(), map, 64);
+		player.moveWithCollision(0, player.getSpeed(), map.getMap(), 64);
 		//player.moveDown();
 	}
 	if (userInput.isDPressed()) {
-		player.moveWithCollision(player.getSpeed(), 0, map, 64);
+		player.moveWithCollision(player.getSpeed(), 0, map.getMap(), 64);
 		//player.moveRight();
 	}
 }

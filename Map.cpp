@@ -1,7 +1,20 @@
 #include "Map.h"
 #include <fstream>
 
-std::vector<std::vector<int>> loadMap(const std::string& filename) {
+
+Map::Map(){}
+
+Map::~Map(){}
+
+void Map::setMap(std::vector<std::vector<int>> map) {
+    this->map = map;
+}
+
+std::vector<std::vector<int>> Map::getMap() {
+    return map;
+}
+
+void Map::loadMap(const std::string& filename) {
     std::vector<std::vector<int>> map;
     std::ifstream file(filename);
     std::string line;
@@ -17,12 +30,13 @@ std::vector<std::vector<int>> loadMap(const std::string& filename) {
             map.push_back(row);
         }
     }
-    return map;
+    setMap(map);
+    file.close();
 }
 
-void renderMap(SDL_Renderer* renderer, SDL_Texture* wallTexture, SDL_Texture* groundTexture, const std::vector<std::vector<int>>& map, int tileSize) {
-    for (size_t y = 0; y < map.size(); ++y) {
-        for (size_t x = 0; x < map[y].size(); ++x) {
+void Map::renderMap(SDL_Renderer* renderer, SDL_Texture* wallTexture, SDL_Texture* groundTexture, int tileSize) {
+    for (size_t y = 0; y < this->map.size(); ++y) {
+        for (size_t x = 0; x < this->map[y].size(); ++x) {
             SDL_FRect destRect = {
                 static_cast<float>(x * tileSize),
                 static_cast<float>(y * tileSize),
@@ -30,7 +44,7 @@ void renderMap(SDL_Renderer* renderer, SDL_Texture* wallTexture, SDL_Texture* gr
                 static_cast<float>(tileSize)
             };
 
-            if (map[y][x] == 1) {
+            if (this->map[y][x] == 1) {
                 SDL_RenderTexture(renderer, wallTexture, NULL, &destRect);
             } else {
                 SDL_RenderTexture(renderer, groundTexture, NULL, &destRect);
