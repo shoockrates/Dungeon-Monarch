@@ -29,6 +29,11 @@ Game::~Game() {
 }
 
 void Game::run(){
+
+	if (!startMenu.run()) {
+		running = false;
+	}
+
 	while (running) {
 		frameStart = SDL_GetTicks();
 		userInput.collectInput();
