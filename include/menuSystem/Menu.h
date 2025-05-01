@@ -24,7 +24,7 @@ struct Button {
 
 class Menu {
 public:
-    Menu(SDL_Window* window, SDL_Renderer* renderer, int* width, int* height);
+    Menu(SDL_Window* window, SDL_Renderer* renderer);
     virtual ~Menu();
 
     int run();
@@ -32,8 +32,6 @@ public:
 protected:
     SDL_Window* window;
     SDL_Renderer* renderer;
-    int* width;
-    int* height;
 
     SDL_Color textColor;
     SDL_Color hoverColor;
