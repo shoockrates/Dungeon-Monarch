@@ -1,10 +1,10 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "Player.h"
+#include "entities/Player.h"
+#include "entities/Enemy.h"
 #include "Renderer.h"
 #include "UserInput.h"
-#include "Enemy.h"
 #include "Room.h"
 #include "Sprites.h"
 

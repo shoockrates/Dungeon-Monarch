@@ -1,6 +1,6 @@
 // PauseMenu.cpp
 
-#include "PauseMenu.h"
+#include "../../include/menuSystem/PauseMenu.h"
 
 PauseMenu::PauseMenu(SDL_Window* win, SDL_Renderer* ren, int* w, int* h)
     : Menu(win, ren, w, h) {}

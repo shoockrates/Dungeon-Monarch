@@ -1,5 +1,5 @@
-#include "Enemy.h"
-#include "Player.h"
+#include "../../include/entities/Enemy.h"
+#include "../../include/entities/Player.h"
 #include <iostream>
 #include <string>
 #include <sstream>

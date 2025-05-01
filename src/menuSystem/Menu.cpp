@@ -1,6 +1,6 @@
 // Menu.cpp
 
-#include "Menu.h"
+#include "../../include/menuSystem/Menu.h"
 
 Menu::Menu(SDL_Window* win, SDL_Renderer* ren, int* w, int* h)
     : window(win), renderer(ren), width(w), height(h), running(true), inMenu(true),

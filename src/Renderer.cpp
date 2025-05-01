@@ -1,4 +1,4 @@
-#include "Renderer.h"
+#include "../include/Renderer.h"
 
 int Renderer::objectCount = 0;
 

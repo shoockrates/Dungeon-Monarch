@@ -1,6 +1,6 @@
 // StartMenu.cpp
 
-#include "StartMenu.h"
+#include "../../include/menuSystem/StartMenu.h"
 
 StartMenu::StartMenu(SDL_Window* win, SDL_Renderer* ren, int* w, int* h)
     : Menu(win, ren, w, h) {}

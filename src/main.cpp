@@ -1,7 +1,7 @@
-#include "Renderer.h"
-#include "UserInput.h"
-#include "Room.h"
-#include "Game.h"
+#include "../include/Renderer.h"
+#include "../include/UserInput.h"
+#include "../include/Room.h"
+#include "../include/Game.h"
 #include <iostream>
 #include <cstdlib>
 #include <string>

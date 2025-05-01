@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "../include/Game.h"
 
 //std::vector<std::vector<int>> map = loadMap("map.txt");
 Map map;
