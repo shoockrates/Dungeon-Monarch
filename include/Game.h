@@ -97,7 +97,6 @@ private:
     UserInput userInput;
     Room room = Room(0, false, true);
 
-    SDL_Texture* testSprite = nullptr;
     void handleEvents();
 };
 
