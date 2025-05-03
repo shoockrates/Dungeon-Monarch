@@ -29,6 +29,11 @@ Game::~Game() {
 }
 
 void Game::run(){
+
+	if (!startMenu.run()) {
+		running = false;
+	}
+
 	while (running) {
 		frameStart = SDL_GetTicks();
 		userInput.collectInput();
@@ -37,7 +42,6 @@ void Game::run(){
 			running = false;
 		}
 		renderer.clear();
-		renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
 		//renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 100, 100);
 		/*renderer.drawSprite(sprites.groundTexture, 0, 0, 30, 30);
 		renderer.drawSprite(sprites.groundTexture, 100, 0, 30, 30);

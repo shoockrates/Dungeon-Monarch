@@ -38,6 +38,11 @@ public:
      */
     void collectInput();
 
+    /**
+    * Checks if mouse is over a certain coordinate and checks if it's in the right place 
+    */
+    bool isMouseOver(SDL_FRect rect, int x, int y);
+
     bool isWPressed() const;
     bool isAPressed() const;
     bool isSPressed() const;

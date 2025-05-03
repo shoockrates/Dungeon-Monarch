@@ -4,7 +4,7 @@
 
 class StartMenu : public Menu {
 public:
-    StartMenu(SDL_Window* window, SDL_Renderer* renderer, int* width, int* height);
+    StartMenu(SDL_Window* window, SDL_Renderer* renderer);
     virtual ~StartMenu() {}
 
     void rebuildButtons() override;
