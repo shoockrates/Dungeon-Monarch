@@ -10,6 +10,11 @@ UserInput::~UserInput() {
     objectCount--;
 }
 
+bool UserInput::isMouseOver(SDL_FRect rect, int x, int y) {
+    return (x >= rect.x && x <= rect.x + rect.w &&
+        y >= rect.y && y <= rect.y + rect.h);
+}
+
 void UserInput::collectInput() {
     quitRequested = false;
 
@@ -22,6 +27,7 @@ void UserInput::collectInput() {
         case SDL_EVENT_KEY_DOWN:
             //SDL_Log("Key pressed: %s", SDL_GetKeyName(event.key.key));
             switch (event.key.key) { 
+                case SDLK_ESCAPE: quitRequested = true; break;
                 case SDLK_W: wPressed = true; break;
                 case SDLK_A: aPressed = true; break;
                 case SDLK_S: sPressed = true; break;

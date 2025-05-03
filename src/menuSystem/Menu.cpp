@@ -2,9 +2,8 @@
 
 #include "../../include/menuSystem/Menu.h"
 
-Menu::Menu(SDL_Window* win, SDL_Renderer* ren, int* w, int* h)
-    : window(win), renderer(ren), width(w), height(h), running(true), inMenu(true),
-      font(nullptr) {
+Menu::Menu(SDL_Window* win, SDL_Renderer* ren)
+    : window(win), renderer(ren), running(true), inMenu(true), font(nullptr) {
 
     textColor.r = 255;
     textColor.g = 255;
@@ -145,13 +144,13 @@ void Menu::updateButtons() {
         buttons[i].isHovered = isMouseOver(buttons[i].rect, mouseX, mouseY);
     }
 
-    int newWidth, newHeight;
-    SDL_GetWindowSize(window, &newWidth, &newHeight);
-    if (newWidth != *width || newHeight != *height) {
-        *width = newWidth;
-        *height = newHeight;
-        rebuildButtons();
-    }
+    // int newWidth, newHeight;
+    // SDL_GetWindowSize(window, &newWidth, &newHeight);
+    // if (newWidth != *width || newHeight != *height) {
+    //     *width = newWidth;
+    //     *height = newHeight;
+    //     rebuildButtons();
+    // }
 }
 
 void Menu::rebuildButtons() {

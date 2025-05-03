@@ -4,7 +4,7 @@
 
 class PauseMenu : public Menu {
 public:
-    PauseMenu(SDL_Window* window, SDL_Renderer* renderer, int* width, int* height);
+    PauseMenu(SDL_Window* window, SDL_Renderer* renderer);
     virtual ~PauseMenu() {}
 
 private:

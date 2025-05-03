@@ -7,6 +7,7 @@
 #include "UserInput.h"
 #include "Room.h"
 #include "Sprites.h"
+#include "menuSystem/StartMenu.h"
 
 #include "Map.h"
 #include <vector>
@@ -91,11 +92,11 @@ private:
 
     Player player = Player("Placeholder", 100, 10, 5, 64, 64);
     Renderer renderer = Renderer(Room::getWidth(), Room::getHeight(), Room::getTileSize());
+    StartMenu startMenu = StartMenu(renderer.getWindow(), renderer.getRenderer());
     std::vector<Enemy> enemies;
     UserInput userInput;
     Room room = Room(0, false, true);
 
-    SDL_Texture* testSprite = nullptr;
     void handleEvents();
 };
 

@@ -25,15 +25,27 @@ Game::~Game() {
     SDL_DestroyTexture(sprites.groundTexture);
     SDL_Quit();
 }
+void Game::run(){
 
-void Game::run() {
-    while (running) {
-        frameStart = SDL_GetTicks();
-        userInput.collectInput();
-        handleEvents();
-        if (userInput.shouldQuit()) {
-            running = false;
-        }
+	if (!startMenu.run()) {
+		running = false;
+	}
+
+	while (running) {
+		frameStart = SDL_GetTicks();
+		userInput.collectInput();
+		handleEvents();
+		if (userInput.shouldQuit()) {
+			running = false;
+		}
+		renderer.clear();
+		//renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 100, 100);
+		/*renderer.drawSprite(sprites.groundTexture, 0, 0, 30, 30);
+		renderer.drawSprite(sprites.groundTexture, 100, 0, 30, 30);
+		renderer.drawSprite(sprites.groundTexture, 0, 100, 30, 30);
+		renderer.drawSprite(sprites.groundTexture, 100, 100, 30, 30);*/
+		map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
+		renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
 
         // Update enemies
         for (auto& enemy : enemies) {
