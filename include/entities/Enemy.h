@@ -2,28 +2,24 @@
 #define ENEMY_H
 
 #include <string>
-//#include "Player.h"
+#include <vector>
+#include <SDL3/SDL.h>
 
 class Player;
 
 class Enemy {
-private:
-    std::string name;
-    int health;
-    int attackPower;
-    int speed;
-    int x, y;
-    static int enemyCount;
-
 public:
-    Enemy(const std::string& n, int hp, int atk, int spd, int startX = 0, int startY = 0);
+    Enemy(const std::string& n, int hp, int atk, int spd, int startX, int startY);
     ~Enemy();
 
+    // Setters
     void setName(const std::string& name);
     void setHealth(int health);
     void setAttackPower(int attackPower);
     void setSpeed(int speed);
     void setPosition(int posX, int posY);
+
+    // Getters
     int getHealth() const;
     int getAttackPower() const;
     int getSpeed() const;
@@ -33,7 +29,7 @@ public:
     static int getEnemyCount();
 
     void init(const std::string& n, int hp, int atk, int spd, int startX, int startY);
-    void attack(Player &player);
+    void attack(Player& player);
     void takeDamage(int dmg);
     void moveUp();
     void moveDown();
@@ -42,6 +38,25 @@ public:
     void die();
     bool isAlive() const;
     std::string toString() const;
+
+    // AI methods
+    void update(Player& player, const std::vector<std::vector<int>>& map, int tileSize);
+
+private:
+    bool isPlayerInRange(const Player& player) const;
+    void moveRandomly(const std::vector<std::vector<int>>& map, int tileSize);
+
+    std::string name;
+    int health;
+    int attackPower;
+    int speed;
+    int x;
+    int y;
+    static int enemyCount;
+
+    // AI variables
+    Uint32 lastMoveTime;
+    Uint32 moveCooldown;
 };
 
-#endif
+#endif // ENEMY_H

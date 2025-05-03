@@ -1,33 +1,30 @@
 #include "../include/Game.h"
 
-//std::vector<std::vector<int>> map = loadMap("map.txt");
 Map map;
 
-//Current images for testing and can be changed
-Game::Game(){
-	map.loadMap("map.txt");
-	try {
-		sprites.tileTexture = renderer.loadSprite("assets/test.bmp");
-		sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
-		sprites.groundTexture = renderer.loadSprite("assets/ground.bmp");
-		sprites.enemyTexture = renderer.loadSprite("assets/zombie.bmp");
-	}
-	catch (const std::exception& e) {
-		SDL_Log("Sprite loading failed: %s", e.what());
-		running = false;
-	}
-	enemies.push_back(Enemy("Zombie", 50, 10, 2, 300, 200));
-	enemies.push_back(Enemy("Zombie", 50, 10, 2, 500, 400));
+Game::Game() {
+    map.loadMap("map.txt");
+    try {
+        sprites.tileTexture = renderer.loadSprite("assets/test.bmp");
+        sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
+        sprites.groundTexture = renderer.loadSprite("assets/ground.bmp");
+        sprites.enemyTexture = renderer.loadSprite("assets/zombie.bmp");
+    }
+    catch (const std::exception& e) {
+        SDL_Log("Sprite loading failed: %s", e.what());
+        running = false;
+    }
+    enemies.push_back(Enemy("Zombie", 50, 10, 2, 300, 200));
+    enemies.push_back(Enemy("Zombie", 50, 10, 2, 500, 400));
 }
 
 Game::~Game() {
-	SDL_DestroyTexture(sprites.tileTexture);
-	SDL_DestroyTexture(sprites.playerTexture);
-	SDL_DestroyTexture(sprites.enemyTexture);
-	SDL_DestroyTexture(sprites.groundTexture);	
-	SDL_Quit();
+    SDL_DestroyTexture(sprites.tileTexture);
+    SDL_DestroyTexture(sprites.playerTexture);
+    SDL_DestroyTexture(sprites.enemyTexture);
+    SDL_DestroyTexture(sprites.groundTexture);
+    SDL_Quit();
 }
-
 void Game::run(){
 
 	if (!startMenu.run()) {
@@ -50,19 +47,31 @@ void Game::run(){
 		map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
 		renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
 
-		for (auto& enemy : enemies) {
-			if (enemy.isAlive()) { 
-				renderer.drawSprite(sprites.enemyTexture, enemy.getX(), enemy.getY(), 64, 64); 
-			}
-		}
-		
-		renderer.present();
-		frameTime = SDL_GetTicks() - frameStart;
+        // Update enemies
+        for (auto& enemy : enemies) {
+            if (enemy.isAlive()) {
+                enemy.update(player, map.getMap(), 64);
+            }
+        }
 
-		if (frameDelay > frameTime) {
-			SDL_Delay(frameDelay - frameTime);
-		}
-	}
+        renderer.clear();
+        renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
+        map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
+        renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
+
+        for (auto& enemy : enemies) {
+            if (enemy.isAlive()) {
+                renderer.drawSprite(sprites.enemyTexture, enemy.getX(), enemy.getY(), 64, 64);
+            }
+        }
+
+        renderer.present();
+        frameTime = SDL_GetTicks() - frameStart;
+
+        if (frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime);
+        }
+    }
 }
 void Game::loadMenu() {};
 void Game::enterRoom(int roomId) {};
