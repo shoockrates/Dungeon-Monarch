@@ -26,22 +26,23 @@ void UserInput::collectInput() {
             break;
         case SDL_EVENT_KEY_DOWN:
             //SDL_Log("Key pressed: %s", SDL_GetKeyName(event.key.key));
-            switch (event.key.key) { 
-                case SDLK_ESCAPE: quitRequested = true; break;
-                case SDLK_W: wPressed = true; break;
-                case SDLK_A: aPressed = true; break;
-                case SDLK_S: sPressed = true; break;
-                case SDLK_D: dPressed = true; break;
+            switch (event.key.key) {
+            case SDLK_ESCAPE: escPressed = true; break;
+            case SDLK_W: wPressed = true; break;
+            case SDLK_A: aPressed = true; break;
+            case SDLK_S: sPressed = true; break;
+            case SDLK_D: dPressed = true; break;
             default: break;
             }
             break;
         case SDL_EVENT_KEY_UP:
             //SDL_Log("Key released: %s", SDL_GetKeyName(event.key.key));
             switch (event.key.key) {
-                case SDLK_W: wPressed = false; break;
-                case SDLK_A: aPressed = false; break;
-                case SDLK_S: sPressed = false; break;
-                case SDLK_D: dPressed = false; break;
+            case SDLK_ESCAPE: escPressed = false; break;
+            case SDLK_W: wPressed = false; break;
+            case SDLK_A: aPressed = false; break;
+            case SDLK_S: sPressed = false; break;
+            case SDLK_D: dPressed = false; break;
             default: break;
             }
             break;
@@ -78,6 +79,7 @@ bool UserInput::isMouseLeftPressed() const { return mouseLeftPressed; }
 int UserInput::getMouseX() const { return mouseX; }
 int UserInput::getMouseY() const { return mouseY; }
 bool UserInput::shouldQuit() const { return quitRequested; }
+bool UserInput::isEscPressed() const { return escPressed; }
 
 void UserInput::setWPressed(bool state) { wPressed = state; }
 void UserInput::setAPressed(bool state) { aPressed = state; }
@@ -88,6 +90,7 @@ void UserInput::setMousePosition(int x, int y) {
     mouseX = x;
     mouseY = y;
 }
+void UserInput::setEscPressed(bool state) { escPressed = state; }
 
 std::string UserInput::toString() const {
     std::stringstream oss;
@@ -101,3 +104,6 @@ std::string UserInput::toString() const {
         << "; ObjectCount: " << objectCount;
     return oss.str();
 }
+
+
+

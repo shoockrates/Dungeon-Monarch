@@ -17,12 +17,13 @@ private:
     bool aPressed = false;
     bool sPressed = false;
     bool dPressed = false;
+    bool escPressed = false;
     bool mouseLeftPressed = false;
     int mouseX = 0;
     int mouseY = 0;
     static int objectCount;
 
-public:   
+public:
     /**
      * Constructor increments input object counter.
      */
@@ -39,7 +40,7 @@ public:
     void collectInput();
 
     /**
-    * Checks if mouse is over a certain coordinate and checks if it's in the right place 
+    * Checks if mouse is over a certain coordinate and checks if it's in the right place
     */
     bool isMouseOver(SDL_FRect rect, int x, int y);
 
@@ -51,6 +52,7 @@ public:
     int getMouseX() const;
     int getMouseY() const;
     bool shouldQuit() const;
+    bool isEscPressed() const;
 
     void setWPressed(bool state);
     void setAPressed(bool state);
@@ -58,6 +60,7 @@ public:
     void setDPressed(bool state);
     void setMouseLeftPressed(bool state);
     void setMousePosition(int x, int y);
+    void setEscPressed(bool state);
 
     /**
     * Returns a string summary of input state.
