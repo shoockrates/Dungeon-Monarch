@@ -4,7 +4,7 @@
 #include "../../include/Room.h"
 
 PauseMenu::PauseMenu(SDL_Window* win, SDL_Renderer* ren)
-    : Menu(win, ren) {}
+    : Menu(win, ren, true) {}
 
 
 void PauseMenu::rebuildButtons() {

@@ -41,6 +41,12 @@ void Game::run(){
 		if (userInput.shouldQuit()) {
 			running = false;
 		}
+		if (userInput.isEscPressed()) {
+			if (!pauseMenu.run()) {
+				running = false;
+			}
+			userInput.setEscPressed(false);
+		}
 		renderer.clear();
 		//renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 100, 100);
 		/*renderer.drawSprite(sprites.groundTexture, 0, 0, 30, 30);

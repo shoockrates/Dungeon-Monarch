@@ -4,7 +4,7 @@
 #include "../../include/Room.h"
 
 StartMenu::StartMenu(SDL_Window* win, SDL_Renderer* ren)
-    : Menu(win, ren) {}
+    : Menu(win, ren, false) {}
 
 
 void StartMenu::rebuildButtons() {
