@@ -2,8 +2,8 @@
 
 #include "../../include/menuSystem/Menu.h"
 
-Menu::Menu(SDL_Window* win, SDL_Renderer* ren)
-    : window(win), renderer(ren), running(true), inMenu(true), font(nullptr) {
+Menu::Menu(SDL_Window* win, SDL_Renderer* ren, bool pause)
+    : window(win), renderer(ren), isPauseMenu(pause), running(true), inMenu(true), font(nullptr) {
 
     textColor.r = 255;
     textColor.g = 255;
@@ -81,14 +81,14 @@ void Menu::renderButton(Button& button) {
 
 int Menu::run() {
 
+    running = true;
+    inMenu = true;
+
     rebuildButtons();
 
     while (running) {
+        
         handleEvents();
-
-        if (!inMenu) {
-            break;
-        }
 
         updateButtons();
 
@@ -107,11 +107,13 @@ int Menu::run() {
 }
 
 void Menu::handleEvents() {
+
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
 
         if (e.type == SDL_EVENT_QUIT) // if the user clicks the X button on the window
             running = false;
+        
 
         float mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
@@ -122,9 +124,11 @@ void Menu::handleEvents() {
                     if (buttons[i].label == "Start Game") {
                         std::cout << "Starting Game...\n";
                         inMenu = false;
+                        running = false;
                     } else if (buttons[i].label == "Resume") {
                         std::cout << "Resuming...\n";
                         inMenu = false;
+                        running = false;
                     } else if (buttons[i].label == "Options") {
                         std::cout << "Opening Options...\n";
                     } else if (buttons[i].label == "Quit") {

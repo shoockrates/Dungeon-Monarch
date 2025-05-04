@@ -7,6 +7,8 @@
 #include <string>
 #include <iostream>
 
+#include "../UserInput.h"
+
 struct Button {
     SDL_FRect rect;
     std::string label;
@@ -24,7 +26,7 @@ struct Button {
 
 class Menu {
 public:
-    Menu(SDL_Window* window, SDL_Renderer* renderer);
+    Menu(SDL_Window* window, SDL_Renderer* renderer, bool isPauseMenu);
     virtual ~Menu();
 
     int run();
@@ -35,10 +37,13 @@ protected:
 
     SDL_Color textColor;
     SDL_Color hoverColor;
-
     TTF_Font* font;
+
     bool running;
     bool inMenu;
+    bool isPauseMenu;
+
+    UserInput userInput;
 
     std::vector<Button> buttons;
 
