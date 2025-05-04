@@ -50,8 +50,7 @@ void Game::run(){
 		renderer.drawSprite(sprites.groundTexture, 100, 0, 30, 30);
 		renderer.drawSprite(sprites.groundTexture, 0, 100, 30, 30);
 		renderer.drawSprite(sprites.groundTexture, 100, 100, 30, 30);*/
-		map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
-		renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
+
 
         // Update enemies
         for (auto& enemy : enemies) {
@@ -60,7 +59,6 @@ void Game::run(){
             }
         }
 
-        renderer.clear();
         renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
         map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
         renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
