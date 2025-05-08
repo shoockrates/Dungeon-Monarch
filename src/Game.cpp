@@ -58,8 +58,6 @@ void Game::run(){
                 enemy.update(player, map.getMap(), 64);
             }
         }
-
-        renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
         map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
         renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
 

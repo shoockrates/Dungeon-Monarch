@@ -14,7 +14,7 @@ Enemy::Enemy(const std::string& n, int hp, int atk, int spd, int startX, int sta
     init(n, hp, atk, spd, startX, startY);
     enemyCount++;
     lastMoveTime = SDL_GetTicks();
-    moveCooldown = 5000;
+    moveCooldown = 250;
     srand(time(0));
 }
 
