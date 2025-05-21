@@ -1,3 +1,5 @@
 .vscode
-makefile
 SDL3
+build
+local.mk
+test
