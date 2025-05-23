@@ -1,4 +1,3 @@
-// StartMenu.h
 #pragma once
 #include "Menu.h"
 

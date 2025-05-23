@@ -1,4 +1,3 @@
-// Menu.h
 #pragma once
 
 #include <SDL3/SDL.h>
@@ -17,6 +16,7 @@ struct Button {
 
     Button(float x, float y, float w, float h, const std::string& text)
         : label(text), isHovered(false), texture(nullptr) {
+
             rect.x = x;
             rect.y = y;
             rect.w = w;

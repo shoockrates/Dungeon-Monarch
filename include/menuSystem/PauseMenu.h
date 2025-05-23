@@ -1,4 +1,3 @@
-// PauseMenu.h
 #pragma once
 #include "Menu.h"
 
