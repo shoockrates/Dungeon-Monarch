@@ -1,8 +1,8 @@
 #include "../../include/menuSystem/PauseMenu.h"
 #include "../../include/Room.h"
 
-PauseMenu::PauseMenu(SDL_Window* win, SDL_Renderer* ren)
-    : Menu(win, ren, true) {}
+PauseMenu::PauseMenu(SDL_Renderer* ren, SaveManager *sm)
+    : Menu(ren, true, sm) {}
 
 
 void PauseMenu::rebuildButtons() {

@@ -1,8 +1,8 @@
 #include "../../include/menuSystem/StartMenu.h"
 #include "../../include/Room.h"
 
-StartMenu::StartMenu(SDL_Window* win, SDL_Renderer* ren)
-    : Menu(win, ren, false) {}
+StartMenu::StartMenu(SDL_Renderer* ren, SaveManager *sm)
+    : Menu(ren, false, sm) {}
 
 void StartMenu::rebuildButtons() {
     buttons.clear();

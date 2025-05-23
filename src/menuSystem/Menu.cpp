@@ -1,7 +1,8 @@
 #include "../../include/menuSystem/Menu.h"
+#include "../../include/SaveManager.h"
 
-Menu::Menu(SDL_Window* win, SDL_Renderer* ren, bool pause)
-    : window(win), renderer(ren), isPauseMenu(pause), running(true), inMenu(true), font(nullptr) {
+Menu::Menu(SDL_Renderer* ren, bool pause, SaveManager *sm)
+    : renderer(ren), isPauseMenu(pause), saveManager(sm), running(true), inMenu(true), font(nullptr) {
 
     textColor.r = 255;
     textColor.g = 255;
@@ -98,10 +99,10 @@ void Menu::handleEvents() {
                         running = false;
                     } else if (buttons[i].label == "Load") {
                         std::cout << "Loading...\n";
-                        // LOAD FUNCTIONALITY
+                        saveManager->run(SaveManager::Operation::Load);
                     } else if (buttons[i].label == "Save") {
+                        saveManager->run(SaveManager::Operation::Save);
                         std::cout << "Saving...\n";
-                        // SAVE FUNCTIONALITY
                     }
                 }
             }

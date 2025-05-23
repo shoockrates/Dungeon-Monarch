@@ -9,6 +9,7 @@
 #include "Sprites.h"
 #include "menuSystem/StartMenu.h"
 #include "menuSystem/PauseMenu.h"
+#include "SaveManager.h"
 
 #include "Map.h"
 #include <vector>
@@ -93,8 +94,9 @@ private:
 
     Player player = Player("Placeholder", 100, 10, 5, 64, 64);
     Renderer renderer = Renderer(Room::getWidth(), Room::getHeight(), Room::getTileSize());
-    StartMenu startMenu = StartMenu(renderer.getWindow(), renderer.getRenderer());
-    PauseMenu pauseMenu = PauseMenu(renderer.getWindow(), renderer.getRenderer());
+    SaveManager saveManager{renderer.getRenderer()};
+    StartMenu startMenu{renderer.getRenderer(), &saveManager};
+    PauseMenu pauseMenu{renderer.getRenderer(), &saveManager};
     std::vector<Enemy> enemies;
     UserInput userInput;
     Room room = Room(0, false, true);

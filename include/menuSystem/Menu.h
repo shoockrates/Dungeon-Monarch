@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "../UserInput.h"
+#include "../SaveManager.h"
 
 struct Button {
     SDL_FRect rect;
@@ -26,13 +27,12 @@ struct Button {
 
 class Menu {
 public:
-    Menu(SDL_Window* window, SDL_Renderer* renderer, bool isPauseMenu);
+    Menu(SDL_Renderer* ren, bool pause, SaveManager *sm);
     virtual ~Menu();
 
     int run();
 
 protected:
-    SDL_Window* window;
     SDL_Renderer* renderer;
 
     SDL_Color textColor;
@@ -44,6 +44,7 @@ protected:
     bool isPauseMenu;
 
     UserInput userInput;
+    SaveManager *saveManager;
 
     std::vector<Button> buttons;
 
