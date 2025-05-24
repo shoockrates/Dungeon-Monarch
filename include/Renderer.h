@@ -66,7 +66,7 @@ public:
     /**
      * Draws the specified texture at the given position and size.
      */
-    void drawSprite(SDL_Texture* texture, int x, int y, int width, int height);
+    void drawSprite(SDL_Texture* texture, int x, int y, int width, int height, bool flipHorizontally = false);
 
     /**
      * Draws the entire screen using repeated tiles.

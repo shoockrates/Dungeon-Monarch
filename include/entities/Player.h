@@ -34,7 +34,10 @@ public:
             return frames[currentFrame];
         }
     };
+
+    bool facingRight;
     Animation walkAnimation;
+    Animation idleAnimation;
 
     Player(const std::string& n, int hp, int atk, int spd, int startX = 0, int startY = 0);
     ~Player();

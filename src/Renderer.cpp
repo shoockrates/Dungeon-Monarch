@@ -116,9 +116,11 @@ void Renderer::drawRoomTiled(SDL_Texture* tileTexture, int roomWidth, int roomHe
     }
 }
 
-void Renderer::drawSprite(SDL_Texture* texture, int x, int y, int width, int height) {
+void Renderer::drawSprite(SDL_Texture* texture, int x, int y, int width, int height, bool flipHorizontally) {
     SDL_FRect dstRect = { static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) };
-    SDL_RenderTexture(renderer, texture, nullptr, &dstRect);
+
+    SDL_FlipMode flip = flipHorizontally ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+    SDL_RenderTextureRotated(renderer, texture, nullptr, &dstRect, 0, nullptr, flip);
 }
 
 void Renderer::present() {
