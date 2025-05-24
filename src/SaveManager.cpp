@@ -41,13 +41,13 @@ void SaveManager::run(Operation op) {
 }
 
 void SaveManager::doSave() {
-    SDL_Delay(3000); // Simulate saving
+    
     // TODO: Actual save logic (write to file, serialize state, etc.)
     done = true;
 }
 
 void SaveManager::doLoad() {
-    SDL_Delay(3000); // Simulate loading
+    
     // TODO: Actual load logic (read file, restore game state, etc.)
     done = true;
 }
