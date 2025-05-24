@@ -1,9 +1,8 @@
-// Menu.cpp
-
 #include "../../include/menuSystem/Menu.h"
+#include "../../include/SaveManager.h"
 
-Menu::Menu(SDL_Window* win, SDL_Renderer* ren, bool pause)
-    : window(win), renderer(ren), isPauseMenu(pause), running(true), inMenu(true), font(nullptr) {
+Menu::Menu(SDL_Renderer* ren, bool pause, SaveManager *sm)
+    : renderer(ren), isPauseMenu(pause), saveManager(sm), running(true), inMenu(true), font(nullptr) {
 
     textColor.r = 255;
     textColor.g = 255;
@@ -42,42 +41,6 @@ void Menu::cleanUp() {
     }
 }
 
-bool Menu::isMouseOver(SDL_FRect rect, int x, int y) {
-    return (x >= rect.x && x <= rect.x + rect.w &&
-            y >= rect.y && y <= rect.y + rect.h);
-}
-
-void Menu::renderButton(Button& button) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderFillRect(renderer, &button.rect);
-
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, button.label.c_str(),  button.label.size(), textColor);
-    if (!textSurface) return;
-
-    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    int textW = textSurface->w;
-    int textH = textSurface->h;
-    SDL_DestroySurface(textSurface);
-
-    SDL_FRect dstFRect;
-    dstFRect.w = textW;
-    dstFRect.h = textH;
-    dstFRect.x = button.rect.x + (button.rect.w - textW) / 2;
-    dstFRect.y = button.rect.y + (button.rect.h - textH) / 2;
-
-    SDL_RenderTexture(renderer, textTexture, nullptr, &dstFRect);
-
-    if (button.isHovered) {
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(renderer, hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a);
-        SDL_RenderFillRect(renderer, &dstFRect);
-    }
-
-    if (button.texture) {
-        SDL_DestroyTexture(button.texture);
-    }
-    button.texture = textTexture;
-}
 
 int Menu::run() {
 
@@ -134,6 +97,12 @@ void Menu::handleEvents() {
                     } else if (buttons[i].label == "Quit") {
                         std::cout << "Quitting...\n";
                         running = false;
+                    } else if (buttons[i].label == "Load") {
+                        std::cout << "Loading...\n";
+                        saveManager->run(SaveManager::Operation::Load);
+                    } else if (buttons[i].label == "Save") {
+                        saveManager->run(SaveManager::Operation::Save);
+                        std::cout << "Saving...\n";
                     }
                 }
             }
@@ -141,22 +110,52 @@ void Menu::handleEvents() {
     }
 }
 
+bool Menu::isMouseOver(SDL_FRect rect, int x, int y) {
+    return (x >= rect.x && x <= rect.x + rect.w &&
+            y >= rect.y && y <= rect.y + rect.h);
+}
+
+void Menu::renderButton(Button& button) {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderFillRect(renderer, &button.rect);
+
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, button.label.c_str(),  button.label.size(), textColor);
+    if (!textSurface) return;
+
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    int textW = textSurface->w;
+    int textH = textSurface->h;
+    SDL_DestroySurface(textSurface);
+
+    SDL_FRect dstFRect;
+    dstFRect.w = textW;
+    dstFRect.h = textH;
+    dstFRect.x = button.rect.x + (button.rect.w - textW) / 2;
+    dstFRect.y = button.rect.y + (button.rect.h - textH) / 2;
+
+    SDL_RenderTexture(renderer, textTexture, nullptr, &dstFRect);
+
+    if (button.isHovered) {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer, hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a);
+        SDL_RenderFillRect(renderer, &dstFRect);
+    }
+
+    if (button.texture) {
+        SDL_DestroyTexture(button.texture);
+    }
+    button.texture = textTexture;
+}
+
+
 void Menu::updateButtons() {
     float mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
     for (int i = 0; i < buttons.size(); ++i) {
         buttons[i].isHovered = isMouseOver(buttons[i].rect, mouseX, mouseY);
     }
-
-    // int newWidth, newHeight;
-    // SDL_GetWindowSize(window, &newWidth, &newHeight);
-    // if (newWidth != *width || newHeight != *height) {
-    //     *width = newWidth;
-    //     *height = newHeight;
-    //     rebuildButtons();
-    // }
 }
 
 void Menu::rebuildButtons() {
-    // Can be implemented in derived classes as needed.
+    // Implemented in the PauseMenu and StartMenu classes
 }
