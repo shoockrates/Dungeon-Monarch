@@ -16,6 +16,29 @@ private:
     int x, y;
 
 public:
+    struct Animation {
+        std::vector<SDL_Texture*> frames;
+        int currentFrame = 0;
+        int frameTime = 100; // ms
+        Uint64 lastUpdate = 0;
+
+        void update() {
+            Uint64 now = SDL_GetTicks();
+            if (now - lastUpdate >= frameTime) {
+                currentFrame = (currentFrame + 1) % frames.size();
+                lastUpdate = now;
+            }
+        }
+
+        SDL_Texture* getCurrentTexture() const {
+            return frames[currentFrame];
+        }
+    };
+
+    bool facingRight;
+    Animation walkAnimation;
+    Animation idleAnimation;
+
     Player(const std::string& n, int hp, int atk, int spd, int startX = 0, int startY = 0);
     ~Player();
 
