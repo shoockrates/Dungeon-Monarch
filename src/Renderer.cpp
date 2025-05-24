@@ -84,6 +84,28 @@ SDL_Texture* Renderer::loadSprite(const std::string& path) {
     return texture;
 }
 
+SDL_Texture* Renderer::loadSpritePNG(const std::string& path) {
+    // Load image using SDL_image
+    SDL_Surface* surface = IMG_Load(path.c_str());
+    if (!surface) {
+        SDL_Log("Failed to load image %s.", path.c_str());
+        return nullptr;
+    }
+
+    // Create texture from surface
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+        SDL_Log("Failed to create texture from %s: %s", path.c_str(), SDL_GetError());
+        SDL_DestroySurface(surface);
+        return nullptr;
+    }
+
+    // Clean up surface after creating texture
+    SDL_DestroySurface(surface);
+    return texture;
+}
+
+
 void Renderer::drawRoomTiled(SDL_Texture* tileTexture, int roomWidth, int roomHeight, int tileSize) {
     for (int row = 0; row < roomHeight; ++row) {
         for (int col = 0; col < roomWidth; ++col) {

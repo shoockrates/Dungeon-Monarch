@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <string>
 #include <stdexcept>
 #include <sstream>
@@ -59,6 +60,8 @@ public:
      * @throws std::runtime_error if loading fails.
      */
     SDL_Texture* loadSprite(const std::string& imagePath);
+
+    SDL_Texture* loadSpritePNG(const std::string& path);
 
     /**
      * Draws the specified texture at the given position and size.
