@@ -14,6 +14,18 @@ Game::Game() {
         SDL_Log("Sprite loading failed: %s", e.what());
         running = false;
     }
+    for(int i = 1; i < 12; ++i) {
+        std::string path = "assets/player/walk/walk-with-weapon-" + std::to_string(i) + ".png";
+        SDL_Texture* tex = renderer.loadSpritePNG(path);
+        player.walkAnimation.frames.push_back(tex);
+    }
+    for(int i = 1; i < 7; ++i) {
+        std::string path = "assets/player/idle/idle-with-weapon-" + std::to_string(i) + ".png";
+        SDL_Texture* tex = renderer.loadSpritePNG(path);
+        player.idleAnimation.frames.push_back(tex);
+    }
+
+    
     enemies.push_back(Enemy("Zombie", 50, 10, 2, 300, 200));
     enemies.push_back(Enemy("Zombie", 50, 10, 2, 500, 400));
 }
@@ -23,6 +35,10 @@ Game::~Game() {
     SDL_DestroyTexture(sprites.playerTexture);
     SDL_DestroyTexture(sprites.enemyTexture);
     SDL_DestroyTexture(sprites.groundTexture);
+
+    for (auto* tex : player.walkAnimation.frames) {
+        SDL_DestroyTexture(tex);
+    }
     SDL_Quit();
 }
 void Game::run(){
@@ -61,7 +77,22 @@ void Game::run(){
 
         renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
         map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
-        renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
+
+        // if player moves update animation
+        if (userInput.isDPressed() || userInput.isAPressed()) {
+            player.walkAnimation.update();
+        }
+
+        if (userInput.isDPressed()) {
+            player.facingRight = true;
+            renderer.drawSprite(player.walkAnimation.getCurrentTexture(), player.getX(), player.getY(), 64, 64);
+        } else if (userInput.isAPressed()) {
+            player.facingRight = false;
+            renderer.drawSprite(player.walkAnimation.getCurrentTexture(), player.getX(), player.getY(), 64, 64, true);
+        } else {
+            renderer.drawSprite(player.idleAnimation.getCurrentTexture(), player.getX(), player.getY(), 64, 64, !player.facingRight);
+        }
+        
 
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {

@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <string>
 #include <stdexcept>
 #include <sstream>
@@ -60,10 +61,12 @@ public:
      */
     SDL_Texture* loadSprite(const std::string& imagePath);
 
+    SDL_Texture* loadSpritePNG(const std::string& path);
+
     /**
      * Draws the specified texture at the given position and size.
      */
-    void drawSprite(SDL_Texture* texture, int x, int y, int width, int height);
+    void drawSprite(SDL_Texture* texture, int x, int y, int width, int height, bool flipHorizontally = false);
 
     /**
      * Draws the entire screen using repeated tiles.

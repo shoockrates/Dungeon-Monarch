@@ -84,6 +84,28 @@ SDL_Texture* Renderer::loadSprite(const std::string& path) {
     return texture;
 }
 
+SDL_Texture* Renderer::loadSpritePNG(const std::string& path) {
+    // Load image using SDL_image
+    SDL_Surface* surface = IMG_Load(path.c_str());
+    if (!surface) {
+        SDL_Log("Failed to load image %s.", path.c_str());
+        return nullptr;
+    }
+
+    // Create texture from surface
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+        SDL_Log("Failed to create texture from %s: %s", path.c_str(), SDL_GetError());
+        SDL_DestroySurface(surface);
+        return nullptr;
+    }
+
+    // Clean up surface after creating texture
+    SDL_DestroySurface(surface);
+    return texture;
+}
+
+
 void Renderer::drawRoomTiled(SDL_Texture* tileTexture, int roomWidth, int roomHeight, int tileSize) {
     for (int row = 0; row < roomHeight; ++row) {
         for (int col = 0; col < roomWidth; ++col) {
@@ -94,9 +116,11 @@ void Renderer::drawRoomTiled(SDL_Texture* tileTexture, int roomWidth, int roomHe
     }
 }
 
-void Renderer::drawSprite(SDL_Texture* texture, int x, int y, int width, int height) {
+void Renderer::drawSprite(SDL_Texture* texture, int x, int y, int width, int height, bool flipHorizontally) {
     SDL_FRect dstRect = { static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) };
-    SDL_RenderTexture(renderer, texture, nullptr, &dstRect);
+
+    SDL_FlipMode flip = flipHorizontally ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+    SDL_RenderTextureRotated(renderer, texture, nullptr, &dstRect, 0, nullptr, flip);
 }
 
 void Renderer::present() {
