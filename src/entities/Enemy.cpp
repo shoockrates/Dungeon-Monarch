@@ -28,9 +28,18 @@ void Enemy::setName(const std::string& name) {
     this->name = name;
 }
 
+void Enemy::setEnemyRect(SDL_FRect rect) {
+    enemyRect = rect;
+}
+
 void Enemy::update(Player& player, const std::vector<std::vector<int>>& map, int tileSize) {
     Uint32 currentTime = SDL_GetTicks();
 
+    enemyRect.x = x;
+    enemyRect.y = y;
+    enemyRect.h = 64;
+    enemyRect.w = 64;
+    
     if (isPlayerInRange(player)) {
         attack(player);
     }
@@ -130,6 +139,10 @@ std::string Enemy::getName() const {
 
 int Enemy::getEnemyCount() {
     return enemyCount;
+}
+
+SDL_FRect Enemy::getEnemyRect() const{
+    return enemyRect;
 }
 // !
 

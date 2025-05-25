@@ -1,12 +1,14 @@
 #include "../../include/entities/Player.h"
 #include "../../include/entities/Enemy.h"
+#include "../../include/UserInput.h"
+#include "../../include/Direction.h"
 #include <iostream>
 #include <sstream>
 
 #define MAX_HEALTH 100
 
-Player::Player(const std::string& n, int hp, int atk, int spd, int startX, int startY){
-    init(n, hp, atk, spd, startX, startY);
+Player::Player(const std::string& n, int hp, int atk, int spd, int startX, int startY, direction facing){
+    init(n, hp, atk, spd, startX, startY, facing);
 }
 
 Player::~Player() {
@@ -51,6 +53,10 @@ Player::~Player() {
         y = posY;
     }
 
+    void Player::setFacing(direction facing) {
+        this->facing = facing;
+    }
+
     // Getters
     int Player::getHealth() const {
         return health;
@@ -71,18 +77,23 @@ Player::~Player() {
     int Player::getY() const {
         return y;
     }
+    
+    direction Player::getFacing() const {
+        return facing;
+    }
 
     std::string Player::getName() const {
         return name;
     }
 // !
 
-void Player::init(const std::string& n, int hp, int atk, int spd, int startX, int startY) {
+void Player::init(const std::string& n, int hp, int atk, int spd, int startX, int startY,direction facing) {
     setName(n);
     setHealth(hp);
     setAttackPower(atk);
     setSpeed(spd);
     setPosition(startX, startY);
+    setFacing(facing);
 }
 
 void Player::moveUp() {
@@ -152,7 +163,7 @@ void Player::heal(int amount) {
     //std::cout << name << " healed " << amount << ". Health: " << health << std::endl;
 }
 
-void Player::attack(Enemy &enemy) {
+void Player::attack(Enemy& enemy) {
     //std::cout << name << " attacks " << enemy.getName() << " for " << attackPower << " damage!\n";
     enemy.takeDamage(attackPower);
 }
@@ -166,8 +177,64 @@ bool Player::isAlive() const {
     return health > 0;
 }
 
-std::string Player::toString() const {
+//If the player is moving on both vertical and horizontal axis, the horizontal axis will be prioritized
+void Player::isFacing(UserInput input){
+    bool up = input.isWPressed();
+    bool down = input.isSPressed();
+    bool left = input.isAPressed();
+    bool right = input.isDPressed();
+    
+    bool vertical = up ^ down;
+    bool horizontal = right ^ left;
+
+    if (horizontal && !vertical) { 
+        facing = right ? RIGHT : LEFT;
+    }
+    else if (!horizontal && vertical) {
+        facing = up ? UP : DOWN;
+    }
+    else if (horizontal && vertical) {
+        facing = right ? RIGHT : LEFT;
+    }
+}
+
+SDL_FRect Player::getAttackArea() {
+    SDL_FRect attackArea;
+
+
+    switch (facing) {
+    case UP:
+        attackArea.x = x;
+        attackArea.y = y - 64;
+        break;
+    case DOWN:
+        attackArea.x = x;
+        attackArea.y = y + 64;
+        break;
+    case LEFT:
+        attackArea.x = x - 64;
+        attackArea.y = y;
+        break;
+    case RIGHT:
+        attackArea.x = x + 64;
+        attackArea.y = y;
+        break;
+    }
+
+    return attackArea;
+}
+const char* Player::directionToString(direction d) const{
+    switch (d) {
+    case UP:    return "UP";
+    case DOWN:  return "DOWN";
+    case LEFT:  return "LEFT";
+    case RIGHT: return "RIGHT";
+    default:    return "UNKNOWN";
+    }
+}
+
+std::string Player::toString() const{
     std::stringstream ss;
-    ss << name << " " << health << " " <<  attackPower << " " << speed << " " << x << " " << y;
+    ss << name << " " << health << " " <<  attackPower << " " << speed << " " << x << " " << y << " " << directionToString(facing);
     return ss.str();
 }

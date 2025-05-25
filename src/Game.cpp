@@ -1,4 +1,5 @@
 #include "../include/Game.h"
+#include "../include/utilities/MathUtils.h"
 
 Map map;
 
@@ -44,6 +45,7 @@ void Game::run(){
 			}
 			userInput.setEscPressed(false);
 		}
+		cout << player.toString() << endl;
 		renderer.clear();
 		//renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 100, 100);
 		/*renderer.drawSprite(sprites.groundTexture, 0, 0, 30, 30);
@@ -62,6 +64,12 @@ void Game::run(){
         renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
         map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
         renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
+
+		for (auto& enemy : enemies) {
+			if (intersects(player.getAttackArea(), enemy.getEnemyRect())) {
+				player.attack(enemy);
+			}
+		}
 
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {
@@ -98,6 +106,7 @@ void Game::handleEvents() {
 		player.moveWithCollision(player.getSpeed(), 0, map.getMap(), 64);
 		//player.moveRight();
 	}
+	player.isFacing(userInput);
 }
 
 

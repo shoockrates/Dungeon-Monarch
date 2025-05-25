@@ -18,6 +18,7 @@ public:
     void setAttackPower(int attackPower);
     void setSpeed(int speed);
     void setPosition(int posX, int posY);
+    void setEnemyRect(SDL_FRect rect);
 
     // Getters
     int getHealth() const;
@@ -26,6 +27,8 @@ public:
     int getX() const;
     int getY() const;
     std::string getName() const;
+    SDL_FRect getEnemyRect() const;
+  
     static int getEnemyCount();
 
     void init(const std::string& n, int hp, int atk, int spd, int startX, int startY);
@@ -57,6 +60,8 @@ private:
     // AI variables
     Uint32 lastMoveTime;
     Uint32 moveCooldown;
+
+    SDL_FRect enemyRect;
 };
 
 #endif // ENEMY_H

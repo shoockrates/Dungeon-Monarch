@@ -91,7 +91,7 @@ private:
 
     bool running = true;
 
-    Player player = Player("Placeholder", 100, 10, 5, 64, 64);
+    Player player = Player("Placeholder", 100, 10, 5, 64, 64, RIGHT);
     Renderer renderer = Renderer(Room::getWidth(), Room::getHeight(), Room::getTileSize());
     StartMenu startMenu = StartMenu(renderer.getWindow(), renderer.getRenderer());
     PauseMenu pauseMenu = PauseMenu(renderer.getWindow(), renderer.getRenderer());
