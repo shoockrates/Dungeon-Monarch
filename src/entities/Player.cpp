@@ -220,6 +220,8 @@ SDL_FRect Player::getAttackArea() {
         attackArea.y = y;
         break;
     }
+    attackArea.h = 64;
+    attackArea.w = 64;
 
     return attackArea;
 }

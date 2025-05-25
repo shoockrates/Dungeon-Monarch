@@ -10,6 +10,7 @@ Game::Game() {
         sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
         sprites.groundTexture = renderer.loadSprite("assets/ground.bmp");
         sprites.enemyTexture = renderer.loadSprite("assets/zombie.bmp");
+		sprites.meleeAttackTexture = renderer.loadSprite("assets/attack.bmp");
     }
     catch (const std::exception& e) {
         SDL_Log("Sprite loading failed: %s", e.what());
@@ -65,17 +66,18 @@ void Game::run(){
         map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
         renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 64, 64);
 
-		for (auto& enemy : enemies) {
-			if (intersects(player.getAttackArea(), enemy.getEnemyRect())) {
-				player.attack(enemy);
-			}
-		}
-
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {
                 renderer.drawSprite(sprites.enemyTexture, enemy.getX(), enemy.getY(), 64, 64);
             }
         }
+		SDL_FRect attackRect = player.getAttackArea();
+		for (auto& enemy : enemies) {
+			if (intersects(attackRect, enemy.getEnemyRect())) {
+				player.attack(enemy);
+				renderer.drawSprite(sprites.meleeAttackTexture, (attackRect.x), (attackRect.y), (attackRect.w), (attackRect.h));
+			}
+		}
 
         renderer.present();
         frameTime = SDL_GetTicks() - frameStart;
@@ -107,6 +109,15 @@ void Game::handleEvents() {
 		//player.moveRight();
 	}
 	player.isFacing(userInput);
+	if (userInput.isMouseLeftPressed()) {
+		SDL_FRect attackRect = player.getAttackArea();
+		for (auto& enemy : enemies) {
+			if (intersects(attackRect, enemy.getEnemyRect())) {
+				player.attack(enemy);
+				renderer.drawSprite(sprites.meleeAttackTexture,(attackRect.x),(attackRect.y),(attackRect.w),(attackRect.h));
+			}
+		}
+	}
 }
 
 
