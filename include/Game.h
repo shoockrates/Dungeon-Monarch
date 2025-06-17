@@ -84,7 +84,7 @@ public:
     const Room& getRoom() const;
 private:
     Sprites sprites;
-
+  
     int mapCounter = 0;
 
     const int FPS = 60;

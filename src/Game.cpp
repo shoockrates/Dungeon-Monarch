@@ -27,7 +27,6 @@ Game::Game() {
         player.idleAnimation.frames.push_back(tex);
     }
 
-    
     //enemies.push_back(Enemy("Zombie", 50, 10, 2, 300, 200));
     //enemies.push_back(Enemy("Zombie", 50, 10, 2, 500, 400));
 }
@@ -108,9 +107,6 @@ void Game::run(){
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);
         }
-
-        
-        
         // Clean up dead enemies
         enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
         [](const Enemy& e) { return !e.isAlive(); }), enemies.end());
