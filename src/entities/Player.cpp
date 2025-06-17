@@ -118,18 +118,21 @@ void Player::moveWithCollision(int dx, int dy, const std::vector<std::vector<int
 void Player::tryMoveAxis(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize, int playerWidth, int playerHeight) {
     int newX = x + dx, newY = y + dy;
     int leftTile   = newX / tileSize;
-    int rightTile  = (newX + playerWidth  - 1) / tileSize;
+    int rightTile  = (newX + playerWidth  - 10) / tileSize;
     int topTile    = newY / tileSize;
-    int bottomTile = (newY + playerHeight - 1) / tileSize;
+    int bottomTile = (newY + playerHeight - 10) / tileSize;
 
     if (topTile >= 0 && bottomTile < (int)map.size() &&
         leftTile >= 0 && rightTile < (int)map[0].size())
     {
         // only if all four corners are free
-        bool canMove = (map[topTile][leftTile]   == 1) &&
-                       (map[topTile][rightTile]  == 1) &&
-                       (map[bottomTile][leftTile]== 1) &&
-                       (map[bottomTile][rightTile]==1);
+        bool canMove =
+        (map[topTile][leftTile] != 0) &&
+        (map[topTile][rightTile] != 0) &&
+        (map[bottomTile][leftTile] != 0) &&
+        (map[bottomTile][rightTile] != 0);
+          
+        //std::cout << "Player can move: " << canMove << " " << map[topTile][leftTile] << " " << map[topTile][rightTile] << " " << map[bottomTile][leftTile] << " " << map[bottomTile][rightTile] << std::endl;
 
         if (canMove) {
             x = newX;  y = newY;

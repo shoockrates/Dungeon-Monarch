@@ -3,11 +3,13 @@
 Map map;
 
 Game::Game() {
-    map.loadMap("map.txt");
+    mapCounter = 1;
+    map.loadMap("map1.txt", enemies, 64);
     try {
         sprites.tileTexture = renderer.loadSprite("assets/test.bmp");
         sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
         sprites.groundTexture = renderer.loadSprite("assets/ground.bmp");
+        sprites.doorTexture = renderer.loadSprite("assets/door.bmp");
         sprites.enemyTexture = renderer.loadSprite("assets/zombie.bmp");
     }
     catch (const std::exception& e) {
@@ -25,9 +27,8 @@ Game::Game() {
         player.idleAnimation.frames.push_back(tex);
     }
 
-    
-    enemies.push_back(Enemy("Zombie", 50, 10, 2, 300, 200));
-    enemies.push_back(Enemy("Zombie", 50, 10, 2, 500, 400));
+    //enemies.push_back(Enemy("Zombie", 50, 10, 2, 300, 200));
+    //enemies.push_back(Enemy("Zombie", 50, 10, 2, 500, 400));
 }
 
 Game::~Game() {
@@ -76,7 +77,7 @@ void Game::run(){
         }
 
         renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
-        map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, 64);
+        map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, sprites.doorTexture, 64);
 
         // if player moves update animation
         if (userInput.isDPressed() || userInput.isAPressed()) {
@@ -106,6 +107,37 @@ void Game::run(){
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);
         }
+        // Clean up dead enemies
+        enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
+        [](const Enemy& e) { return !e.isAlive(); }), enemies.end());
+
+
+        // Check for door entry only if no enemies left
+        if (enemies.empty()) {
+        int playerTileX = player.getX() / 64;
+        int playerTileY = player.getY() / 64;
+        int doorTileX = map.doorX / 64;
+        int doorTileY = map.doorY / 64;
+
+        if (abs(playerTileX - doorTileX) < 2 && abs(playerTileY - doorTileY) < 2) {
+            // Player is close enough to the door to enter the next map
+            mapCounter++;
+            enemies.clear(); // Important to reset before loading new map
+
+            if (mapCounter >= 5) {
+                // TODO: Padaryti end screena
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Victory", "You won!", NULL);
+                running = false;
+                return;
+            } else {
+                std::cout << "Entering next map: " << mapCounter << std::endl;
+                // Load the next map
+                std::string nextMap = "map" + std::to_string(mapCounter) + ".txt";
+                map.loadMap(nextMap, enemies, 64);
+                player.setPosition(64, 64); // reset player position if needed
+            }
+        }
+    }
     }
 }
 void Game::loadMenu() {};
