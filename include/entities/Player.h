@@ -4,6 +4,7 @@
 #include <string>
 //#include "Enemy.h"
 #include "../Map.h"
+#include "../UserInput.h"
 
 class Enemy;
 
@@ -14,6 +15,9 @@ private:
     int attackPower;
     int speed;
     int x, y;
+
+    Uint32 lastAttackTime;
+    Uint32 attackCooldown;
 
 public:
     struct Animation {
@@ -64,6 +68,7 @@ public:
     void takeDamage(int dmg);
     void heal(int amount);
     void attack(Enemy &enemy);
+    SDL_FRect getAttackArea();
     void die();
     bool isAlive() const;
     std::string toString() const;

@@ -16,6 +16,7 @@ struct Sprites {
     SDL_Texture* bulletTexture = nullptr;
     SDL_Texture* groundTexture = nullptr;
     SDL_Texture* doorTexture = nullptr;
+    SDL_Texture* meleeAttackTexture = nullptr;
 };
 
 #endif

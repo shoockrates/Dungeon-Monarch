@@ -10,6 +10,7 @@
 #include "menuSystem/StartMenu.h"
 #include "menuSystem/PauseMenu.h"
 #include "SaveManager.h"
+#include "utilities/MathUtils.h"
 
 #include "Map.h"
 #include <vector>

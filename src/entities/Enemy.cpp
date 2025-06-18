@@ -14,7 +14,7 @@ Enemy::Enemy(const std::string& n, int hp, int atk, int spd, int startX, int sta
     init(n, hp, atk, spd, startX, startY);
     enemyCount++;
     lastMoveTime = SDL_GetTicks();
-    moveCooldown = 5000;
+    moveCooldown = 500;
     srand(time(0));
 }
 
@@ -56,6 +56,13 @@ void Enemy::setAttackPower(int attackPower) {
         return;
     }
     this->attackPower = attackPower;
+}
+
+void Enemy::setEnemyRect(float x, float y, float w, float h) {
+    this->enemyRect.x = x;
+    this->enemyRect.y = y;
+    this->enemyRect.w = w;
+    this->enemyRect.h = h;
 }
 
 bool Enemy::isPlayerInRange(const Player& player) const {
@@ -139,6 +146,7 @@ void Enemy::init(const std::string& n, int hp, int atk, int spd, int startX, int
     setAttackPower(atk);
     setSpeed(spd);
     setPosition(startX, startY);
+    setEnemyRect(startX, startY, 64, 64);
 }
 
 void Enemy::attack(Player& player) {
@@ -160,20 +168,24 @@ void Enemy::takeDamage(int dmg) {
 
 void Enemy::moveUp() {
     y += speed;
+    enemyRect.y += speed;
     //std::cout << name << " moved up to (" << x << ", " << y << ")\n";
 }
 
 void Enemy::moveDown() {
     y -= speed;
+    enemyRect.y -= speed;
     //std::cout << name << " moved down to (" << x << ", " << y << ")\n";
 }
 
 void Enemy::moveRight() {
     x += speed;
+    enemyRect.x += speed;
     //std::cout << name << " moved right to (" << x << ", " << y << ")\n";
 }
 
 void Enemy::moveLeft() {
+    enemyRect.y -= speed;
     x -= speed;
     //std::cout << name << " moved left to (" << x << ", " << y << ")\n";
 }
@@ -182,6 +194,9 @@ void Enemy::die() {
     //std::cout << name << " has died.\n";
     enemyCount--;
     // TO DO: Maybe add score to player?
+}
+SDL_FRect Enemy::getEnemyRect() const {
+    return enemyRect;
 }
 
 bool Enemy::isAlive() const {
