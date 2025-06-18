@@ -11,6 +11,7 @@ Game::Game() {
         sprites.groundTexture = renderer.loadSprite("assets/ground.bmp");
         sprites.doorTexture = renderer.loadSprite("assets/door.bmp");
         sprites.enemyTexture = renderer.loadSprite("assets/zombie.bmp");
+        sprites.playerTexture = renderer.loadSprite("assets/attack.bmp");
     }
     catch (const std::exception& e) {
         SDL_Log("Sprite loading failed: %s", e.what());
@@ -36,6 +37,8 @@ Game::~Game() {
     SDL_DestroyTexture(sprites.playerTexture);
     SDL_DestroyTexture(sprites.enemyTexture);
     SDL_DestroyTexture(sprites.groundTexture);
+    SDL_DestroyTexture(sprites.doorTexture);
+    SDL_DestroyTexture(sprites.meleeAttackTexture);
 
     for (auto* tex : player.walkAnimation.frames) {
         SDL_DestroyTexture(tex);
@@ -51,6 +54,7 @@ void Game::run(){
 	while (running) {
 		frameStart = SDL_GetTicks();
 		userInput.collectInput();
+        renderer.clear();
 		handleEvents();
 		if (userInput.shouldQuit()) {
 			running = false;
@@ -61,7 +65,7 @@ void Game::run(){
 			}
 			userInput.setEscPressed(false);
 		}
-		renderer.clear();
+		
 		//renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 100, 100);
 		/*renderer.drawSprite(sprites.groundTexture, 0, 0, 30, 30);
 		renderer.drawSprite(sprites.groundTexture, 100, 0, 30, 30);
@@ -161,6 +165,18 @@ void Game::handleEvents() {
 		player.moveWithCollision(player.getSpeed(), 0, map.getMap(), 64);
 		//player.moveRight();
 	}
+    // Attack enemies and if the areas intersect, do damage
+    if (userInput.isMouseLeftPressed()) {
+        SDL_FRect attackRect = player.getAttackArea();
+        for (auto& enemy : enemies) {
+            if (intersects(attackRect, enemy.getEnemyRect())) {
+                //cout << "Attempting to attack enemy: " << enemy.toString() << endl;
+                player.attack(enemy);
+                renderer.drawSprite(sprites.meleeAttackTexture, (attackRect.x), (attackRect.y), (attackRect.w), (attackRect.h));
+            }
+        }
+        //cout << "Left mouse was clicked " << player.toString() << endl;
+    }
 }
 
 

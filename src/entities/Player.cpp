@@ -7,6 +7,8 @@
 
 Player::Player(const std::string& n, int hp, int atk, int spd, int startX, int startY){
     init(n, hp, atk, spd, startX, startY);
+    lastAttackTime = SDL_GetTicks();
+    attackCooldown = 1000;
 }
 
 Player::~Player() {
@@ -157,7 +159,11 @@ void Player::heal(int amount) {
 
 void Player::attack(Enemy &enemy) {
     //std::cout << name << " attacks " << enemy.getName() << " for " << attackPower << " damage!\n";
-    enemy.takeDamage(attackPower);
+    Uint32 currentTime = SDL_GetTicks();
+        if (currentTime - lastAttackTime > attackCooldown) {
+            enemy.takeDamage(attackPower);
+            lastAttackTime = currentTime;
+        }
 }
 
 void Player::die() {
@@ -168,9 +174,27 @@ void Player::die() {
 bool Player::isAlive() const {
     return health > 0;
 }
+SDL_FRect Player::getAttackArea() {
+    SDL_FRect attackArea;
+
+    switch(facingRight){
+    case true:
+        attackArea.x = x;
+        attackArea.y = y;
+        break;
+    case false:
+        attackArea.x = x - 64;
+        attackArea.y = y;
+        break;
+    }
+    attackArea.h = 64;
+    attackArea.w = 64;
+
+    return attackArea;
+}
 
 std::string Player::toString() const {
     std::stringstream ss;
-    ss << name << " " << health << " " <<  attackPower << " " << speed << " " << x << " " << y;
+    ss << name << " " << health << " " <<  attackPower << " " << speed << " " << x << " " << y << " " << facingRight;
     return ss.str();
 }

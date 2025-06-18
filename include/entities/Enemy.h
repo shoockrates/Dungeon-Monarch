@@ -18,6 +18,7 @@ public:
     void setAttackPower(int attackPower);
     void setSpeed(int speed);
     void setPosition(int posX, int posY);
+    void setEnemyRect(SDL_FRect rect);
 
     // Getters
     int getHealth() const;
@@ -27,6 +28,7 @@ public:
     int getY() const;
     std::string getName() const;
     static int getEnemyCount();
+    void setEnemyRect(float x, float y, float w, float h);
 
     void init(const std::string& n, int hp, int atk, int spd, int startX, int startY);
     void attack(Player& player);
@@ -38,6 +40,7 @@ public:
     void die();
     bool isAlive() const;
     std::string toString() const;
+    SDL_FRect getEnemyRect() const;
 
     // AI methods
     void update(Player& player, const std::vector<std::vector<int>>& map, int tileSize);
@@ -53,6 +56,7 @@ private:
     int x;
     int y;
     static int enemyCount;
+    SDL_FRect enemyRect;
 
     // AI variables
     Uint32 lastMoveTime;
