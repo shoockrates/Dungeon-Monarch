@@ -15,6 +15,7 @@ private:
     int attackPower;
     int speed;
     int x, y;
+    int maxHealth;
 
     Uint32 lastAttackTime;
     Uint32 attackCooldown;
@@ -51,12 +52,14 @@ public:
     void setAttackPower(int attackPower);
     void setSpeed(int speed);
     void setPosition(int posX, int posY);
+    void setMaxHealth(int hp);
     int getHealth() const;
     int getAttackPower() const;
     int getSpeed() const;
     int getX() const;
     int getY() const;
     std::string getName() const;
+    int getMaxHealth() const;
 
     void init(const std::string& n, int hp, int atk, int spd, int startX, int startY);
     void moveUp();

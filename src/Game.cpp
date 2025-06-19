@@ -104,6 +104,7 @@ void Game::run(){
                 renderer.drawSprite(sprites.enemyTexture, enemy.getX(), enemy.getY(), 64, 64);
             }
         }
+        
 
         renderer.present();
         frameTime = SDL_GetTicks() - frameStart;
@@ -115,7 +116,6 @@ void Game::run(){
         enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
         [](const Enemy& e) { return !e.isAlive(); }), enemies.end());
 
-
         // Check for door entry only if no enemies left
         if (enemies.empty()) {
         int playerTileX = player.getX() / 64;
@@ -123,25 +123,38 @@ void Game::run(){
         int doorTileX = map.doorX / 64;
         int doorTileY = map.doorY / 64;
 
-        if (abs(playerTileX - doorTileX) < 2 && abs(playerTileY - doorTileY) < 2) {
-            // Player is close enough to the door to enter the next map
-            mapCounter++;
-            enemies.clear(); // Important to reset before loading new map
+            if (abs(playerTileX - doorTileX) < 2 && abs(playerTileY - doorTileY) < 2) {
+                // Player is close enough to the door to enter the next map
+                mapCounter++;
+                enemies.clear(); // Important to reset before loading new map
 
-            if (mapCounter >= 5) {
-                // TODO: Padaryti end screena
-                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Victory", "You won!", NULL);
-                running = false;
-                return;
-            } else {
-                std::cout << "Entering next map: " << mapCounter << std::endl;
-                // Load the next map
-                std::string nextMap = "map" + std::to_string(mapCounter) + ".txt";
-                map.loadMap(nextMap, enemies, 64);
-                player.setPosition(64, 64); // reset player position if needed
+                if (mapCounter >= 5) {
+                    // TODO: Padaryti end screena
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Victory", "You won!", NULL);
+                    running = false;
+                    return;
+                } else {
+                    int upgradeCode = upgradeMenu.run();
+                    if (upgradeCode == 2) {
+                        std::cout << "Upgrading attack " << player.getAttackPower();
+                        player.setAttackPower(player.getAttackPower() + 1);
+                        std::cout << " -> " << player.getAttackPower() << std::endl;
+                    } else if(upgradeCode == 3) {
+                        std::cout << "Upgrading health " << player.getMaxHealth();
+                        player.setMaxHealth(player.getMaxHealth() + 10);
+                        std::cout << " -> " << player.getMaxHealth() << std::endl;
+                    }
+
+                    std::cout << "Entering next map: " << mapCounter << std::endl;
+                    // Load the next map
+                    std::string nextMap = "map" + std::to_string(mapCounter) + ".txt";
+                    map.loadMap(nextMap, enemies, 64);
+                    player.setPosition(64, 64); // reset player position if 
+                    player.heal(20);
+                    userInput.reset(); // reset userInput to prevent movement bugs after entering a new room
+                }
             }
         }
-    }
     }
 }
 void Game::loadMenu() {};

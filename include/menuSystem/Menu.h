@@ -43,6 +43,8 @@ protected:
     bool inMenu;
     bool isPauseMenu;
 
+    int returnValue;
+
     UserInput userInput;
     SaveManager *saveManager;
 

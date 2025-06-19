@@ -7,9 +7,10 @@
 #include "UserInput.h"
 #include "Room.h"
 #include "Sprites.h"
+#include "SaveManager.h"
 #include "menuSystem/StartMenu.h"
 #include "menuSystem/PauseMenu.h"
-#include "SaveManager.h"
+#include "menuSystem/UpgradeMenu.h"
 #include "utilities/MathUtils.h"
 
 #include "Map.h"
@@ -100,6 +101,7 @@ private:
     SaveManager saveManager{renderer.getRenderer()};
     StartMenu startMenu{renderer.getRenderer(), &saveManager};
     PauseMenu pauseMenu{renderer.getRenderer(), &saveManager};
+    UpgradeMenu upgradeMenu{renderer.getRenderer(), &saveManager};
     std::vector<Enemy> enemies;
     UserInput userInput;
     Room room = Room(0, false, true);
