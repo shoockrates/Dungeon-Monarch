@@ -84,6 +84,9 @@ public:
     Room& getRoom();
     const Room& getRoom() const;
 private:
+
+    void saveGameState(int level);
+    void updateLevelInDB(int level, const std::string& playerName);
     Sprites sprites;
   
     int mapCounter = 0;
