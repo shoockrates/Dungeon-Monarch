@@ -67,8 +67,8 @@ int Menu::run() {
         SDL_Delay(16);
     }
 
-    // When using UpgradeMenu, return 1 to upgrade player maxHealth and 0 to upgrade player attack
     // return 1 if back to game or 0 if quit
+    // return 2 to upgrade attack, 3 to upgrade max health
     return returnValue; 
 }
 
@@ -115,7 +115,7 @@ void Menu::handleEvents() {
                         inMenu = false;
                         returnValue = 2;
                     } else if (buttons[i].label == "Health") {
-                        //std::cout << "Increasing health\n";
+                        //std::cout << "Increasing max health\n";
                         running = false;
                         inMenu = true;
                         returnValue = 3;

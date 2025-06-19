@@ -136,13 +136,13 @@ void Game::run(){
                 } else {
                     int upgradeCode = upgradeMenu.run();
                     if (upgradeCode == 2) {
-                        std::cout << "Upgrading attack " << player.getAttackPower();
+                        //std::cout << "Upgrading attack " << player.getAttackPower();
                         player.setAttackPower(player.getAttackPower() + 1);
-                        std::cout << " -> " << player.getAttackPower() << std::endl;
+                        //std::cout << " -> " << player.getAttackPower() << std::endl;
                     } else if(upgradeCode == 3) {
-                        std::cout << "Upgrading health " << player.getMaxHealth();
+                        //std::cout << "Upgrading max health " << player.getMaxHealth();
                         player.setMaxHealth(player.getMaxHealth() + 10);
-                        std::cout << " -> " << player.getMaxHealth() << std::endl;
+                        //std::cout << " -> " << player.getMaxHealth() << std::endl;
                     }
 
                     std::cout << "Entering next map: " << mapCounter << std::endl;
