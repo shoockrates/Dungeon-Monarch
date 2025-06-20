@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <SDL3/SDL.h>
+#include "../../include/UI/UIElement.h"
 
 int Enemy::enemyCount = 0;
 
@@ -19,6 +20,7 @@ Enemy::Enemy(const std::string& n, int hp, int atk, int spd, int startX, int sta
 }
 
 Enemy::~Enemy() {
+    delete healthDisplay;
     enemyCount--;
 }
 
@@ -63,6 +65,10 @@ void Enemy::setEnemyRect(float x, float y, float w, float h) {
     this->enemyRect.y = y;
     this->enemyRect.w = w;
     this->enemyRect.h = h;
+}
+
+void Enemy::setHealthDisplay(UIElement* element) {
+    this->healthDisplay = element;
 }
 
 bool Enemy::isPlayerInRange(const Player& player) const {
@@ -135,6 +141,10 @@ std::string Enemy::getName() const {
     return name;
 }
 
+UIElement* Enemy::getHealthDisplay() const {
+    return healthDisplay;
+}
+
 int Enemy::getEnemyCount() {
     return enemyCount;
 }
@@ -201,6 +211,14 @@ SDL_FRect Enemy::getEnemyRect() const {
 
 bool Enemy::isAlive() const {
     return health > 0;
+}
+
+void Enemy::displayHealth(SDL_Renderer* renderer) {
+    if (healthDisplay == nullptr) {
+        healthDisplay = new UIElement(renderer, x, y, 64, 64);
+    }
+    healthDisplay->update(x, y, health);
+    healthDisplay->render();
 }
 
 std::string Enemy::toString() const {

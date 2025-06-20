@@ -70,6 +70,13 @@ void UserInput::collectInput() {
         }
     }
 }
+void UserInput::reset() {
+    setWPressed(0);
+    setAPressed(0);
+    setDPressed(0);
+    setSPressed(0);
+    setMouseLeftPressed(0);
+}
 
 bool UserInput::isWPressed() const { return wPressed; }
 bool UserInput::isAPressed() const { return aPressed; }

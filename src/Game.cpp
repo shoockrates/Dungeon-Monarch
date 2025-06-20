@@ -1,7 +1,11 @@
 #include "../include/Game.h"
+
 #include <fstream>
 #include <sstream>
 #include <cstdlib> // For system()
+
+#include "../include/UI/UIElement.h"
+
 
 Map map;
 
@@ -11,6 +15,7 @@ Game::Game() {
     saveGameState(mapCounter);
     
     map.loadMap("map1.txt", enemies, 64);
+
     try {
         sprites.tileTexture = renderer.loadSprite("assets/test.bmp");
         sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
@@ -97,10 +102,27 @@ void Game::run(){
 			userInput.setEscPressed(false);
 		}
 
+
+		
+		//renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 100, 100);
+		/*renderer.drawSprite(sprites.groundTexture, 0, 0, 30, 30);
+		renderer.drawSprite(sprites.groundTexture, 100, 0, 30, 30);
+		renderer.drawSprite(sprites.groundTexture, 0, 100, 30, 30);
+		renderer.drawSprite(sprites.groundTexture, 100, 100, 30, 30);*/
+
+        // check if player died
+        if(player.getHealth() <= 0) {
+            if (!loseMenu.run()) {
+                running = false;
+            }
+        }
+
+
         // Update enemies
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {
                 enemy.update(player, map.getMap(), 64);
+                
             }
         }
 
@@ -126,53 +148,73 @@ void Game::run(){
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {
                 renderer.drawSprite(sprites.enemyTexture, enemy.getX(), enemy.getY(), 64, 64);
+                enemy.displayHealth(renderer.getRenderer());
             }
         }
+        
 
+        // Clean up dead enemies
+        enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
+        [](const Enemy& e) { return !e.isAlive(); }), enemies.end());
+
+        // Check for door entry only if no enemies left
+        if (enemies.empty()) {
+
+            int playerTileX = player.getX() / 64;
+            int playerTileY = player.getY() / 64;
+            int doorTileX = map.doorX / 64;
+            int doorTileY = map.doorY / 64;
+
+
+
+
+            if (abs(playerTileX - doorTileX) < 2 && abs(playerTileY - doorTileY) < 2) {
+                // Player is close enough to the door to enter the next map
+                mapCounter++;
+
+                enemies.clear(); // Important to reset before loading new map
+               
+
+                if (mapCounter >= 5) {
+                    if (!winMenu.run()) {
+                        running = false;
+                    }
+                    return;
+                } else {
+                    int upgradeCode = upgradeMenu.run();
+                    if (upgradeCode == 2) {
+                        //std::cout << "Upgrading attack " << player.getAttackPower();
+                        player.setAttackPower(player.getAttackPower() + 1);
+                        //std::cout << " -> " << player.getAttackPower() << std::endl;
+                    } else if(upgradeCode == 3) {
+                        //std::cout << "Upgrading max health " << player.getMaxHealth();
+                        player.setMaxHealth(player.getMaxHealth() + 10);
+                        //std::cout << " -> " << player.getMaxHealth() << std::endl;
+                    }
+
+
+                    std::cout << "Entering next map: " << mapCounter << std::endl;
+                    // Load the next map
+                    std::string nextMap = "map" + std::to_string(mapCounter) + ".txt";
+                    map.loadMap(nextMap, enemies, 64);
+
+                    player.setPosition(64, 64); // reset player position if 
+                    player.heal(20);
+                    userInput.reset(); // reset userInput to prevent movement bugs after entering a new room
+                }
+            }
+        }
+        player.displayHealth(renderer.getRenderer());
+
+
+        // This should be at the end of this method as this takes care of FPS cap
         renderer.present();
         frameTime = SDL_GetTicks() - frameStart;
 
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);
         }
-        // Clean up dead enemies
-        enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
-        [](const Enemy& e) { return !e.isAlive(); }), enemies.end());
 
-
-        // Check for door entry only if no enemies left
-        if (enemies.empty()) {
-            int playerTileX = player.getX() / 64;
-            int playerTileY = player.getY() / 64;
-            int doorTileX = map.doorX / 64;
-            int doorTileY = map.doorY / 64;
-
-            if (abs(playerTileX - doorTileX) < 2 && abs(playerTileY - doorTileY) < 2) {
-                // Player is close enough to the door to enter the next map
-                mapCounter++;
-                
-                // --- NEW FUNCTIONALITY ---
-                // Save the new level to state.txt and send the change to MongoDB
-                saveGameState(mapCounter);
-                updateLevelInDB(mapCounter, player.getName());
-                // --- END NEW FUNCTIONALITY ---
-
-                enemies.clear(); // Important to reset before loading new map
-
-                if (mapCounter >= 5) {
-                    // TODO: Padaryti end screena
-                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Victory", "You won!", NULL);
-                    running = false;
-                    return;
-                } else {
-                    std::cout << "Entering next map: " << mapCounter << std::endl;
-                    // Load the next map
-                    std::string nextMap = "map" + std::to_string(mapCounter) + ".txt";
-                    map.loadMap(nextMap, enemies, 64);
-                    player.setPosition(64, 64); // reset player position if needed
-                }
-            }
-        }
     }
 }
 void Game::loadMenu() {};

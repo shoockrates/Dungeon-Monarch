@@ -5,6 +5,7 @@
 //#include "Enemy.h"
 #include "../Map.h"
 #include "../UserInput.h"
+#include "../UI/UIElement.h"
 
 class Enemy;
 
@@ -15,9 +16,12 @@ private:
     int attackPower;
     int speed;
     int x, y;
+    int maxHealth;
 
     Uint32 lastAttackTime;
     Uint32 attackCooldown;
+
+    UIElement* healthDisplay = nullptr;
 
 public:
     struct Animation {
@@ -51,12 +55,16 @@ public:
     void setAttackPower(int attackPower);
     void setSpeed(int speed);
     void setPosition(int posX, int posY);
+    void setMaxHealth(int hp);
+    void setHealthDisplay(UIElement* element);
     int getHealth() const;
     int getAttackPower() const;
     int getSpeed() const;
     int getX() const;
     int getY() const;
     std::string getName() const;
+    int getMaxHealth() const;
+    UIElement* getHealthDisplay() const;
 
     void init(const std::string& n, int hp, int atk, int spd, int startX, int startY);
     void moveUp();
@@ -71,6 +79,7 @@ public:
     SDL_FRect getAttackArea();
     void die();
     bool isAlive() const;
+    void displayHealth(SDL_Renderer* renderer);
     std::string toString() const;
 };
 
