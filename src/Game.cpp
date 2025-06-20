@@ -74,6 +74,12 @@ void Game::run(){
 		renderer.drawSprite(sprites.groundTexture, 0, 100, 30, 30);
 		renderer.drawSprite(sprites.groundTexture, 100, 100, 30, 30);*/
 
+        // check if player died
+        if(player.getHealth() <= 0) {
+            if (!loseMenu.run()) {
+                running = false;
+            }
+        }
 
         // Update enemies
         for (auto& enemy : enemies) {
@@ -128,9 +134,9 @@ void Game::run(){
                
 
                 if (mapCounter >= 5) {
-                    // TODO: Padaryti end screena
-                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Victory", "You won!", NULL);
-                    running = false;
+                    if (!winMenu.run()) {
+                        running = false;
+                    }
                     return;
                 } else {
                     int upgradeCode = upgradeMenu.run();

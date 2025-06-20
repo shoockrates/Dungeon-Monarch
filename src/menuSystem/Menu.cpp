@@ -149,7 +149,7 @@ void Menu::renderButton(Button& button) {
 
     SDL_RenderTexture(renderer, textTexture, nullptr, &dstFRect);
 
-    if (button.isHovered) {
+    if (button.isHovered && button.canBeHovered) {
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawColor(renderer, hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a);
         SDL_RenderFillRect(renderer, &dstFRect);
