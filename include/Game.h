@@ -12,6 +12,7 @@
 #include "menuSystem/PauseMenu.h"
 #include "menuSystem/UpgradeMenu.h"
 #include "utilities/MathUtils.h"
+#include "UI/UIElement.h"
 
 #include "Map.h"
 #include <vector>

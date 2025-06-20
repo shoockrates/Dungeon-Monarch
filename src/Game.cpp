@@ -1,10 +1,12 @@
 #include "../include/Game.h"
+#include "../include/UI/UIElement.h"
 
 Map map;
 
 Game::Game() {
     mapCounter = 1;
     map.loadMap("map1.txt", enemies, 64);
+
     try {
         sprites.tileTexture = renderer.loadSprite("assets/test.bmp");
         sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
@@ -77,6 +79,7 @@ void Game::run(){
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {
                 enemy.update(player, map.getMap(), 64);
+                
             }
         }
 
@@ -102,16 +105,11 @@ void Game::run(){
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {
                 renderer.drawSprite(sprites.enemyTexture, enemy.getX(), enemy.getY(), 64, 64);
+                enemy.displayHealth(renderer.getRenderer());
             }
         }
         
 
-        renderer.present();
-        frameTime = SDL_GetTicks() - frameStart;
-
-        if (frameDelay > frameTime) {
-            SDL_Delay(frameDelay - frameTime);
-        }
         // Clean up dead enemies
         enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
         [](const Enemy& e) { return !e.isAlive(); }), enemies.end());
@@ -127,6 +125,7 @@ void Game::run(){
                 // Player is close enough to the door to enter the next map
                 mapCounter++;
                 enemies.clear(); // Important to reset before loading new map
+               
 
                 if (mapCounter >= 5) {
                     // TODO: Padaryti end screena
@@ -154,6 +153,16 @@ void Game::run(){
                     userInput.reset(); // reset userInput to prevent movement bugs after entering a new room
                 }
             }
+        }
+        player.displayHealth(renderer.getRenderer());
+
+
+        // This should be at the end of this method as this takes care of FPS cap
+        renderer.present();
+        frameTime = SDL_GetTicks() - frameStart;
+
+        if (frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime);
         }
     }
 }

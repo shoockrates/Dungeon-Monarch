@@ -10,6 +10,7 @@ Player::Player(const std::string& n, int hp, int atk, int spd, int startX, int s
 }
 
 Player::~Player() {
+    delete healthDisplay;
     //std::cout << "Player destroyed: " << name << std::endl;
 }
 
@@ -56,6 +57,10 @@ Player::~Player() {
             maxHealth = hp;
         }
     }
+    
+    void Player::setHealthDisplay(UIElement* element) {
+        this->healthDisplay = element;
+    }
 
     // Getters
     int Player::getHealth() const {
@@ -84,6 +89,10 @@ Player::~Player() {
 
     int Player::getMaxHealth() const {
         return maxHealth;
+    }
+
+    UIElement* Player::getHealthDisplay() const {
+        return healthDisplay;
     }
 // !
 
@@ -200,6 +209,14 @@ SDL_FRect Player::getAttackArea() {
     attackArea.w = 64;
 
     return attackArea;
+}
+
+void Player::displayHealth(SDL_Renderer* renderer) {
+    if (healthDisplay == nullptr) {
+        healthDisplay = new UIElement(renderer, x, y, 64, 64);
+    }
+    healthDisplay->update(x, y, health);
+    healthDisplay->render();
 }
 
 std::string Player::toString() const {
