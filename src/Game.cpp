@@ -72,6 +72,12 @@ void Game::run(){
 		renderer.drawSprite(sprites.groundTexture, 0, 100, 30, 30);
 		renderer.drawSprite(sprites.groundTexture, 100, 100, 30, 30);*/
 
+        //check if player died
+        if(player.getHealth() <= 0) {
+            if (!looseWindow.run()) {
+                running = false;
+            }
+        }
 
         // Update enemies
         for (auto& enemy : enemies) {
