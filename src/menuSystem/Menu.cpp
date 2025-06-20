@@ -109,15 +109,13 @@ void Menu::handleEvents() {
                     } else if (buttons[i].label == "Save") {
                         saveManager->run(SaveManager::Operation::Save);
                         std::cout << "Saving...\n";
-                    } else if (buttons[i].label == "Attack") {
+                    } else if (buttons[i].label == "Upgrade attack") {
                         //std::cout << "Increasing attack\n";
                         running = false;
-                        inMenu = false;
                         returnValue = 2;
-                    } else if (buttons[i].label == "Health") {
+                    } else if (buttons[i].label == "Upgrade health") {
                         //std::cout << "Increasing max health\n";
                         running = false;
-                        inMenu = true;
                         returnValue = 3;
                     }
                 }
