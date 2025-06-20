@@ -11,7 +11,7 @@
 #include "menuSystem/StartMenu.h"
 #include "menuSystem/PauseMenu.h"
 #include "menuSystem/UpgradeMenu.h"
-#include "menuSystem/LoseWindow.h"
+#include "menuSystem/GameOverMenu.h"
 #include "utilities/MathUtils.h"
 
 #include "Map.h"
@@ -103,7 +103,8 @@ private:
     StartMenu startMenu{renderer.getRenderer(), &saveManager};
     PauseMenu pauseMenu{renderer.getRenderer(), &saveManager};
     UpgradeMenu upgradeMenu{renderer.getRenderer(), &saveManager};
-    LooseWindow looseWindow{renderer.getRenderer(), &saveManager};
+    GameOverMenu loseMenu{renderer.getRenderer(), &saveManager, false};
+    GameOverMenu winMenu{renderer.getRenderer(), &saveManager, true};
     std::vector<Enemy> enemies;
     UserInput userInput;
     Room room = Room(0, false, true);
