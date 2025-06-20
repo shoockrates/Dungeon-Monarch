@@ -1,10 +1,19 @@
 #include "../include/Game.h"
+
+#include <fstream>
+#include <sstream>
+#include <cstdlib> // For system()
+
 #include "../include/UI/UIElement.h"
+
 
 Map map;
 
 Game::Game() {
     mapCounter = 1;
+    // Initial save when the game starts
+    saveGameState(mapCounter);
+    
     map.loadMap("map1.txt", enemies, 64);
 
     try {
@@ -29,9 +38,6 @@ Game::Game() {
         SDL_Texture* tex = renderer.loadSpritePNG(path);
         player.idleAnimation.frames.push_back(tex);
     }
-
-    //enemies.push_back(Enemy("Zombie", 50, 10, 2, 300, 200));
-    //enemies.push_back(Enemy("Zombie", 50, 10, 2, 500, 400));
 }
 
 Game::~Game() {
@@ -47,6 +53,34 @@ Game::~Game() {
     }
     SDL_Quit();
 }
+
+void Game::saveGameState(int level) {
+    std::ofstream stateFile("state.txt");
+    if (stateFile.is_open()) {
+        stateFile << level;
+        stateFile.close();
+        std::cout << "Game state saved. Current level: " << level << std::endl;
+    } else {
+        std::cerr << "Error: Unable to open state.txt for writing." << std::endl;
+    }
+}
+
+void Game::updateLevelInDB(int level, const std::string& playerName) {
+    std::stringstream command;
+    // This command calls the Python script to send data.
+    // "1" is the command for SEND, followed by the level and player name.
+    command << "python SendData.py 1 " << level << " \"" << playerName << "\"";
+
+    std::cout << "Executing command: " << command.str() << std::endl;
+    int result = system(command.str().c_str());
+
+    if (result == 0) {
+        std::cout << "Successfully updated level in MongoDB." << std::endl;
+    } else {
+        std::cerr << "Error: Failed to execute Python script or script returned an error." << std::endl;
+    }
+}
+
 void Game::run(){
 
 	if (!startMenu.run()) {
@@ -67,6 +101,8 @@ void Game::run(){
 			}
 			userInput.setEscPressed(false);
 		}
+
+
 		
 		//renderer.drawSprite(sprites.playerTexture, player.getX(), player.getY(), 100, 100);
 		/*renderer.drawSprite(sprites.groundTexture, 0, 0, 30, 30);
@@ -80,6 +116,7 @@ void Game::run(){
                 running = false;
             }
         }
+
 
         // Update enemies
         for (auto& enemy : enemies) {
@@ -122,14 +159,19 @@ void Game::run(){
 
         // Check for door entry only if no enemies left
         if (enemies.empty()) {
-        int playerTileX = player.getX() / 64;
-        int playerTileY = player.getY() / 64;
-        int doorTileX = map.doorX / 64;
-        int doorTileY = map.doorY / 64;
+
+            int playerTileX = player.getX() / 64;
+            int playerTileY = player.getY() / 64;
+            int doorTileX = map.doorX / 64;
+            int doorTileY = map.doorY / 64;
+
+
+
 
             if (abs(playerTileX - doorTileX) < 2 && abs(playerTileY - doorTileY) < 2) {
                 // Player is close enough to the door to enter the next map
                 mapCounter++;
+
                 enemies.clear(); // Important to reset before loading new map
                
 
@@ -150,10 +192,12 @@ void Game::run(){
                         //std::cout << " -> " << player.getMaxHealth() << std::endl;
                     }
 
+
                     std::cout << "Entering next map: " << mapCounter << std::endl;
                     // Load the next map
                     std::string nextMap = "map" + std::to_string(mapCounter) + ".txt";
                     map.loadMap(nextMap, enemies, 64);
+
                     player.setPosition(64, 64); // reset player position if 
                     player.heal(20);
                     userInput.reset(); // reset userInput to prevent movement bugs after entering a new room
@@ -170,6 +214,7 @@ void Game::run(){
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);
         }
+
     }
 }
 void Game::loadMenu() {};
@@ -179,31 +224,24 @@ void Game::killEntity(int entityId) {};
 void Game::handleEvents() {
 	if (userInput.isWPressed()) {
 		player.moveWithCollision(0, -(player.getSpeed()), map.getMap(), 64);
-		//player.moveUp();
 	}
 	if (userInput.isAPressed()) {
 		player.moveWithCollision(-player.getSpeed(), 0, map.getMap(), 64);
-		//player.moveLeft();
 	}
 	if (userInput.isSPressed()) {
 		player.moveWithCollision(0, player.getSpeed(), map.getMap(), 64);
-		//player.moveDown();
 	}
 	if (userInput.isDPressed()) {
 		player.moveWithCollision(player.getSpeed(), 0, map.getMap(), 64);
-		//player.moveRight();
 	}
-    // Attack enemies and if the areas intersect, do damage
     if (userInput.isMouseLeftPressed()) {
         SDL_FRect attackRect = player.getAttackArea();
         for (auto& enemy : enemies) {
             if (intersects(attackRect, enemy.getEnemyRect())) {
-                //cout << "Attempting to attack enemy: " << enemy.toString() << endl;
                 player.attack(enemy);
                 renderer.drawSprite(sprites.meleeAttackTexture, (attackRect.x), (attackRect.y), (attackRect.w), (attackRect.h));
             }
         }
-        //cout << "Left mouse was clicked " << player.toString() << endl;
     }
 }
 
