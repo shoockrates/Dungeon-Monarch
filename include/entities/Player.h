@@ -25,6 +25,7 @@ public:
         int currentFrame = 0;
         int frameTime = 100; // ms
         Uint64 lastUpdate = 0;
+        bool animationRunning = 0;
 
         void update() {
             Uint64 now = SDL_GetTicks();
@@ -38,10 +39,12 @@ public:
             return frames[currentFrame];
         }
     };
+    int attacked = -1;
 
     bool facingRight;
     Animation walkAnimation;
     Animation idleAnimation;
+    Animation attackAnimation;
 
     Player(const std::string& n, int hp, int atk, int spd, int startX = 0, int startY = 0);
     ~Player();

@@ -17,13 +17,21 @@ Game::Game() {
         SDL_Log("Sprite loading failed: %s", e.what());
         running = false;
     }
-    for(int i = 1; i < 12; ++i) {
-        std::string path = "assets/player/walk/walk-with-weapon-" + std::to_string(i) + ".png";
+    
+    for(int i = 0; i <= 7; ++i) {
+        std::string path = "assets/player/walk/walk-" + std::to_string(i) + ".png";
         SDL_Texture* tex = renderer.loadSpritePNG(path);
         player.walkAnimation.frames.push_back(tex);
     }
-    for(int i = 1; i < 7; ++i) {
-        std::string path = "assets/player/idle/idle-with-weapon-" + std::to_string(i) + ".png";
+    
+    for(int i = 0; i <= 5; ++i) {
+        std::string path = "assets/player/attack/attack-" + std::to_string(i) + ".png";
+        SDL_Texture* tex = renderer.loadSpritePNG(path);
+        player.attackAnimation.frames.push_back(tex);
+    }
+
+    for(int i = 0; i <= 5; ++i) {
+        std::string path = "assets/player/idle/idle-" + std::to_string(i) + ".png";
         SDL_Texture* tex = renderer.loadSpritePNG(path);
         player.idleAnimation.frames.push_back(tex);
     }
@@ -50,6 +58,7 @@ void Game::run(){
 	if (!startMenu.run()) {
 		running = false;
 	}
+    player.attackAnimation.currentFrame = -1;
 
 	while (running) {
 		frameStart = SDL_GetTicks();
@@ -83,21 +92,33 @@ void Game::run(){
         renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
         map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, sprites.doorTexture, 64);
 
-        // if player moves update animation
-        if (userInput.isDPressed() || userInput.isAPressed()) {
+        // Animation update
+        if (player.attackAnimation.currentFrame >= 0) {
+            if (player.attackAnimation.currentFrame >= 5) {
+                player.attackAnimation.currentFrame = -1;
+                player.attackAnimation.animationRunning = 0;
+            } else {
+                player.attackAnimation.update();
+            }
+        } else if (userInput.isDPressed() || userInput.isAPressed()) {
             player.walkAnimation.update();
+        } else {
+            player.idleAnimation.update();
         }
 
         if (userInput.isDPressed()) {
             player.facingRight = true;
-            renderer.drawSprite(player.walkAnimation.getCurrentTexture(), player.getX(), player.getY(), 64, 64);
         } else if (userInput.isAPressed()) {
             player.facingRight = false;
-            renderer.drawSprite(player.walkAnimation.getCurrentTexture(), player.getX(), player.getY(), 64, 64, true);
-        } else {
-            renderer.drawSprite(player.idleAnimation.getCurrentTexture(), player.getX(), player.getY(), 64, 64, !player.facingRight);
         }
-        
+        // Animation
+        if (player.attackAnimation.currentFrame >= 0 && player.attackAnimation.currentFrame <= 5) {
+            renderer.drawSprite(player.attackAnimation.getCurrentTexture(), player.getX(), player.getY(), 68, 54, !player.facingRight);
+        } if (userInput.isDPressed() || userInput.isAPressed()) {
+            renderer.drawSprite(player.walkAnimation.getCurrentTexture(), player.getX(), player.getY(), 68, 54, !player.facingRight);
+        } else {
+            renderer.drawSprite(player.idleAnimation.getCurrentTexture(), player.getX(), player.getY(), 68, 54, !player.facingRight);
+        }
 
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {
@@ -166,13 +187,15 @@ void Game::handleEvents() {
 		//player.moveRight();
 	}
     // Attack enemies and if the areas intersect, do damage
-    if (userInput.isMouseLeftPressed()) {
+    if (userInput.isMouseLeftPressed() && !player.attackAnimation.animationRunning) {
+        player.attackAnimation.currentFrame = 0; // set for animation
+        player.attackAnimation.animationRunning = 1;
         SDL_FRect attackRect = player.getAttackArea();
         for (auto& enemy : enemies) {
             if (intersects(attackRect, enemy.getEnemyRect())) {
                 //cout << "Attempting to attack enemy: " << enemy.toString() << endl;
                 player.attack(enemy);
-                renderer.drawSprite(sprites.meleeAttackTexture, (attackRect.x), (attackRect.y), (attackRect.w), (attackRect.h));
+                
             }
         }
         //cout << "Left mouse was clicked " << player.toString() << endl;
