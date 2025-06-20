@@ -21,6 +21,7 @@ Menu::Menu(SDL_Renderer* ren, bool pause, SaveManager *sm)
     if (!font) {
         std::cerr << "Failed to load font.\n";
     }
+    returnValue = -1;
 
     rebuildButtons();
 }
@@ -66,7 +67,9 @@ int Menu::run() {
         SDL_Delay(16);
     }
 
-    return inMenu ? 0 : 1; // return 1 if back to game or 0 if quit
+    // return 1 if back to game or 0 if quit
+    // return 2 to upgrade attack, 3 to upgrade max health
+    return returnValue; 
 }
 
 void Menu::handleEvents() {
@@ -88,21 +91,32 @@ void Menu::handleEvents() {
                         std::cout << "Starting Game...\n";
                         inMenu = false;
                         running = false;
+                        returnValue = 1;
                     } else if (buttons[i].label == "Resume") {
                         std::cout << "Resuming...\n";
                         inMenu = false;
                         running = false;
+                        returnValue = 1;
                     } else if (buttons[i].label == "Options") {
                         std::cout << "Opening Options...\n";
                     } else if (buttons[i].label == "Quit") {
                         std::cout << "Quitting...\n";
                         running = false;
+                        returnValue = 0;
                     } else if (buttons[i].label == "Load") {
                         std::cout << "Loading...\n";
                         saveManager->run(SaveManager::Operation::Load);
                     } else if (buttons[i].label == "Save") {
                         saveManager->run(SaveManager::Operation::Save);
                         std::cout << "Saving...\n";
+                    } else if (buttons[i].label == "Upgrade attack") {
+                        //std::cout << "Increasing attack\n";
+                        running = false;
+                        returnValue = 2;
+                    } else if (buttons[i].label == "Upgrade health") {
+                        //std::cout << "Increasing max health\n";
+                        running = false;
+                        returnValue = 3;
                     }
                 }
             }

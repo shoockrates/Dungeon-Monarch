@@ -44,6 +44,11 @@ public:
     */
     bool isMouseOver(SDL_FRect rect, int x, int y);
 
+    /**
+    * Resets user input. Good idea to call it after entering a new room.
+    */
+    void reset();
+
     bool isWPressed() const;
     bool isAPressed() const;
     bool isSPressed() const;

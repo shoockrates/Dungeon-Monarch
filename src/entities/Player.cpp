@@ -3,15 +3,14 @@
 #include <iostream>
 #include <sstream>
 
-#define MAX_HEALTH 100
-
 Player::Player(const std::string& n, int hp, int atk, int spd, int startX, int startY){
     init(n, hp, atk, spd, startX, startY);
     lastAttackTime = SDL_GetTicks();
-    attackCooldown = 1000;
+    attackCooldown = 800; // 0.8 seconds = 800 ms
 }
 
 Player::~Player() {
+    delete healthDisplay;
     //std::cout << "Player destroyed: " << name << std::endl;
 }
 
@@ -53,6 +52,16 @@ Player::~Player() {
         y = posY;
     }
 
+    void Player::setMaxHealth(int hp) {
+        if (hp >= 0) {
+            maxHealth = hp;
+        }
+    }
+    
+    void Player::setHealthDisplay(UIElement* element) {
+        this->healthDisplay = element;
+    }
+
     // Getters
     int Player::getHealth() const {
         return health;
@@ -77,6 +86,14 @@ Player::~Player() {
     std::string Player::getName() const {
         return name;
     }
+
+    int Player::getMaxHealth() const {
+        return maxHealth;
+    }
+
+    UIElement* Player::getHealthDisplay() const {
+        return healthDisplay;
+    }
 // !
 
 void Player::init(const std::string& n, int hp, int atk, int spd, int startX, int startY) {
@@ -85,6 +102,7 @@ void Player::init(const std::string& n, int hp, int atk, int spd, int startX, in
     setAttackPower(atk);
     setSpeed(spd);
     setPosition(startX, startY);
+    setMaxHealth(hp);
 }
 
 void Player::moveUp() {
@@ -149,8 +167,8 @@ void Player::takeDamage(int dmg) {
 }
 
 void Player::heal(int amount) {
-    if(health + amount > MAX_HEALTH){
-        health = MAX_HEALTH;
+    if(health + amount > maxHealth){
+        health = maxHealth;
         return;
     }
     health += amount;
@@ -191,6 +209,14 @@ SDL_FRect Player::getAttackArea() {
     attackArea.w = 64;
 
     return attackArea;
+}
+
+void Player::displayHealth(SDL_Renderer* renderer) {
+    if (healthDisplay == nullptr) {
+        healthDisplay = new UIElement(renderer, x, y, 64, 64);
+    }
+    healthDisplay->update(x, y, health);
+    healthDisplay->render();
 }
 
 std::string Player::toString() const {
