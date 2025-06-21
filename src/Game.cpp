@@ -13,7 +13,7 @@ Game::Game() {
     mapCounter = 1;
     // Initial save when the game starts
     saveGameState(mapCounter);
-    
+    updateLevelInDB(mapCounter, name) ;
     map.loadMap("map1.txt", enemies, 64);
 
     try {
@@ -94,9 +94,9 @@ void Game::updateLevelInDB(int level, const std::string& playerName) {
     int result = system(command.str().c_str());
 
     if (result == 0) {
-        std::cout << "Successfully updated level in MongoDB." << std::endl;
+        //std::cout << "Successfully updated level in MongoDB." << std::endl;
     } else {
-        std::cerr << "Error: Failed to execute Python script or script returned an error." << std::endl;
+        //std::cerr << "Error: Failed to execute Python script or script returned an error." << std::endl;
     }
 }
 
@@ -211,11 +211,13 @@ void Game::run(){
                 // Player is close enough to the door to enter the next map
                 mapCounter++;
 
+		updateLevelInDB(mapCounter, name) ;
                 enemies.clear(); // Important to reset before loading new map
                
 
                 if (mapCounter >= 5) {
                     if (!winMenu.run()) {
+			updateLevelInDB(1, name)
                         running = false;
                     }
                     return;
