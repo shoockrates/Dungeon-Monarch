@@ -91,6 +91,7 @@ private:
     void saveGameState(int level);
     void updateLevelInDB(int level, const std::string& playerName);
     Sprites sprites;
+    void loadEnemies();
   
     int mapCounter = 0;
 
@@ -101,7 +102,7 @@ private:
 
     bool running = true;
 
-    Player player = Player("Placeholder", 100, 10, 5, 64, 64);
+    Player player = Player("Placeholder", 1000, 10, 5, 64, 64);
     Renderer renderer = Renderer(Room::getWidth(), Room::getHeight(), Room::getTileSize());
     SaveManager saveManager{renderer.getRenderer()};
     StartMenu startMenu{renderer.getRenderer(), &saveManager};

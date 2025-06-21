@@ -44,17 +44,7 @@ Game::Game() {
             player.idleAnimation.frames.push_back(tex);
         }
 
-        for (auto& enemy : enemies) {
-            enemy.hurtAnimation.currentFrame = -1;
-            enemy.wasAttacked = 0;
-            for(int i = 0; i <= 3; ++i) {
-                std::string path = "assets/enemy/hurt/hurt-" + std::to_string(i) + ".png";
-                SDL_Texture* tex = renderer.loadSpritePNG(path);
-                enemy.hurtAnimation.frames.push_back(tex);
-            }
-            SDL_Texture* tex = renderer.loadSpritePNG("assets/enemy/idle/idle.png");
-            enemy.idleAnimation.frames.push_back(tex);
-        }
+        loadEnemies();
 
     }
     catch (const std::exception& e) {
@@ -186,9 +176,8 @@ void Game::run(){
             renderer.drawSprite(player.idleAnimation.getCurrentTexture(), player.getX(), player.getY(), 68, 54, !player.facingRight);
         }
 
+        // Enemy animation
         for (auto& enemy : enemies) {
-
-            // Enemy animation
             if (enemy.wasAttacked && enemy.hurtAnimation.currentFrame >= 3) {
                 enemy.hurtAnimation.currentFrame = -1;
                 enemy.wasAttacked = 0;
@@ -198,7 +187,6 @@ void Game::run(){
             } else {
                 enemy.idleAnimation.update();
                 renderer.drawSprite(enemy.idleAnimation.getCurrentTexture(), enemy.getX(), enemy.getY(), 46, 30, true);
-
             }
         }
         
@@ -255,6 +243,7 @@ void Game::run(){
                     // Load the next map
                     std::string nextMap = "map" + std::to_string(mapCounter) + ".txt";
                     map.loadMap(nextMap, enemies, 64);
+                    loadEnemies();
 
                     player.setPosition(64, 64); // reset player position if 
                     player.heal(20);
@@ -278,6 +267,20 @@ void Game::run(){
 void Game::loadMenu() {};
 void Game::enterRoom(int roomId) {};
 void Game::killEntity(int entityId) {};
+
+void Game::loadEnemies() {
+    for (auto& enemy : enemies) {
+        enemy.hurtAnimation.currentFrame = -1;
+        enemy.wasAttacked = 0;
+        for(int i = 0; i <= 3; ++i) {
+            std::string path = "assets/enemy/hurt/hurt-" + std::to_string(i) + ".png";
+            SDL_Texture* tex = renderer.loadSpritePNG(path);
+            enemy.hurtAnimation.frames.push_back(tex);
+        }
+        SDL_Texture* tex = renderer.loadSpritePNG("assets/enemy/idle/idle.png");
+        enemy.idleAnimation.frames.push_back(tex);
+    }
+}
 
 void Game::handleEvents() {
 	if (userInput.isWPressed()) {
