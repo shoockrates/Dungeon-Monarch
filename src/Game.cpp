@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib> // For system()
-
+#include <string>
 #include "../include/UI/UIElement.h"
 
 
