@@ -16,6 +16,8 @@ Enemy::Enemy(const std::string& n, int hp, int atk, int spd, int startX, int sta
     enemyCount++;
     lastMoveTime = SDL_GetTicks();
     moveCooldown = 500;
+    lastAttackTime = SDL_GetTicks();
+    attackCooldown = 1000; // 1 seconds = 1000 ms
     srand(time(0));
 }
 
@@ -75,7 +77,7 @@ bool Enemy::isPlayerInRange(const Player& player) const {
     int dx = player.getX() - x;
     int dy = player.getY() - y;
     float distance = std::sqrt(dx * dx + dy * dy);
-    return distance < 128; // 2 tiles range
+    return distance < 64; // 1 tile range
 }
 
 void Enemy::moveRandomly(const std::vector<std::vector<int>>& map, int tileSize) {
@@ -160,8 +162,12 @@ void Enemy::init(const std::string& n, int hp, int atk, int spd, int startX, int
 }
 
 void Enemy::attack(Player& player) {
-    //std::cout << name << " attacks " << player.getName() << " for " << attackPower << " damage!\n";
-    player.takeDamage(attackPower);
+    Uint32 currentTime = SDL_GetTicks();
+    if (currentTime - lastAttackTime > attackCooldown) {
+        player.takeDamage(attackPower);
+        lastAttackTime = currentTime;
+        //std::cout << name << " attacks " << player.getName() << " for " << attackPower << " damage!\n";
+    }
 }
 
 void Enemy::takeDamage(int dmg) {

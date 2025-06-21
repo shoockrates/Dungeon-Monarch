@@ -62,6 +62,9 @@ private:
     SDL_FRect enemyRect;
     UIElement* healthDisplay = nullptr;
 
+    Uint32 lastAttackTime;
+    Uint32 attackCooldown;
+
     // AI variables
     Uint32 lastMoveTime;
     Uint32 moveCooldown;
