@@ -9,7 +9,7 @@
 
 Map map;
 
-Game::Game() {
+Game::Game(const std::string& name ) {
     mapCounter = 1;
     // Initial save when the game starts
     saveGameState(mapCounter);
