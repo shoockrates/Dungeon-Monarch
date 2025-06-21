@@ -13,10 +13,11 @@ struct Button {
     SDL_FRect rect;
     std::string label;
     bool isHovered;
+    bool canBeHovered;
     SDL_Texture* texture;
 
-    Button(float x, float y, float w, float h, const std::string& text)
-        : label(text), isHovered(false), texture(nullptr) {
+    Button(float x, float y, float w, float h, const std::string& text, bool hover = true)
+        : label(text), isHovered(false), texture(nullptr), canBeHovered(hover) {
 
             rect.x = x;
             rect.y = y;
@@ -42,6 +43,8 @@ protected:
     bool running;
     bool inMenu;
     bool isPauseMenu;
+
+    int returnValue;
 
     UserInput userInput;
     SaveManager *saveManager;

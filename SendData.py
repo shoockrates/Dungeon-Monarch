@@ -1,54 +1,58 @@
-from pymongo import MongoClient
-
-client = MongoClient("mongodb+srv://Peter:vx06051blveBaZ7T@cluster0.t9fms6j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-
 import sys
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 
-SEND = "1"
+# !!! IMPORTANT !!!
+# Replace this with your actual MongoDB connection string.
+MONGO_URI = "mongodb+srv://Peter:vx06051blveBaZ7T@cluster0.t9fms6j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-command = 0
+# --- Exit Codes ---
+# 0: Success
+# 1: Argument Error (wrong number of args, invalid level, etc.)
+# 2: Database Connection Error
+# 3: Database Operation Error (e.g., update failed)
 
-level = 0
+def main():
+    if len(sys.argv) < 4:
+        sys.exit(1) # Exit with Argument Error
 
-if len(sys.argv) < 2:
+    command = sys.argv[1].strip()
+    level_str = sys.argv[2].strip()
+    name = " ".join(sys.argv[3:]).strip()
+
+    if command != "1" or not name:
+        sys.exit(1) # Exit with Argument Error
+
+    try:
+        level = int(level_str)
+    except ValueError:
+        sys.exit(1) # Exit with Argument Error (level is not a number)
+
+    try:
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        # The ismaster command is cheap and does not require auth.
+        client.admin.command('ismaster')
+        db = client["game_database"]
+        collection = db["player_levels"]
+    except ConnectionFailure:
+        sys.exit(2) # Exit with DB Connection Error
+
+    if command == "1":
+        try:
+            collection.update_one(
+                {"name": name},
+                {"$set": {"level": level}},
+                upsert=True
+            )
+            client.close()
+            sys.exit(0) # Exit with Success
+        except Exception:
+            client.close()
+            sys.exit(3) # Exit with DB Operation Error
+    
+    # Fallback in case logic expands later
     sys.exit(1)
 
-command = sys.argv[1].lower()
 
-level = sys.argv[2].lower()
-
-if command not in ["1", "0"]:
-    sys.exit(1)
-
-if level not in ["1", "2", "3", "4", "5"]:
-    sys.exit(1)
-
-name = ""
-
-for i in range(3, len(sys.argv)):
-    if i > 2:
-        name += " "
-        
-    name += sys.argv[i].strip()
-
-if not name:
-    sys.exit(1)
-
-try:
-    db = client["my_database"]
-    collection = db["my_collection"]
-
-    if command == SEND:
-        if collection.find_one({"name": name}):
-            collection.update_one({"name": name}, {"$set": {"level": level}})
-        else:
-            data = {"name": name, "level": level}
-            collection.insert_one(data)
-    else:
-        if not collection.find_one({"name": name}):
-            sys.exit(2)
-            
-        data = collection.find_one({"name": name})
-        #print(data)
-finally:
-    client.close()
+if __name__ == "__main__":
+    main()

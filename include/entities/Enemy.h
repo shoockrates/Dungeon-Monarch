@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <SDL3/SDL.h>
+#include "../UI/UIElement.h"
 
 class Player;
 
@@ -18,7 +19,8 @@ public:
     void setAttackPower(int attackPower);
     void setSpeed(int speed);
     void setPosition(int posX, int posY);
-    void setEnemyRect(SDL_FRect rect);
+    void setEnemyRect(float x, float y, float w, float h);
+    void setHealthDisplay(UIElement* element);
 
     // Getters
     int getHealth() const;
@@ -27,8 +29,8 @@ public:
     int getX() const;
     int getY() const;
     std::string getName() const;
+    UIElement* getHealthDisplay() const;
     static int getEnemyCount();
-    void setEnemyRect(float x, float y, float w, float h);
 
     void init(const std::string& n, int hp, int atk, int spd, int startX, int startY);
     void attack(Player& player);
@@ -41,6 +43,7 @@ public:
     bool isAlive() const;
     std::string toString() const;
     SDL_FRect getEnemyRect() const;
+    void displayHealth(SDL_Renderer* renderer);
 
     // AI methods
     void update(Player& player, const std::vector<std::vector<int>>& map, int tileSize);
@@ -82,6 +85,10 @@ private:
     int y;
     static int enemyCount;
     SDL_FRect enemyRect;
+    UIElement* healthDisplay = nullptr;
+
+    Uint32 lastAttackTime;
+    Uint32 attackCooldown;
 
     // AI variables
     Uint32 lastMoveTime;

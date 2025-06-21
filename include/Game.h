@@ -7,10 +7,13 @@
 #include "UserInput.h"
 #include "Room.h"
 #include "Sprites.h"
+#include "SaveManager.h"
 #include "menuSystem/StartMenu.h"
 #include "menuSystem/PauseMenu.h"
-#include "SaveManager.h"
+#include "menuSystem/UpgradeMenu.h"
+#include "menuSystem/GameOverMenu.h"
 #include "utilities/MathUtils.h"
+#include "UI/UIElement.h"
 
 #include "Map.h"
 #include <vector>
@@ -84,6 +87,9 @@ public:
     Room& getRoom();
     const Room& getRoom() const;
 private:
+
+    void saveGameState(int level);
+    void updateLevelInDB(int level, const std::string& playerName);
     Sprites sprites;
   
     int mapCounter = 0;
@@ -100,6 +106,9 @@ private:
     SaveManager saveManager{renderer.getRenderer()};
     StartMenu startMenu{renderer.getRenderer(), &saveManager};
     PauseMenu pauseMenu{renderer.getRenderer(), &saveManager};
+    UpgradeMenu upgradeMenu{renderer.getRenderer(), &saveManager};
+    GameOverMenu loseMenu{renderer.getRenderer(), &saveManager, false};
+    GameOverMenu winMenu{renderer.getRenderer(), &saveManager, true};
     std::vector<Enemy> enemies;
     UserInput userInput;
     Room room = Room(0, false, true);
