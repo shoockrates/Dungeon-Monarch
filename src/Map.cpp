@@ -32,7 +32,7 @@ void Map::loadMap(const std::string& filename, std::vector<Enemy>& enemies, int 
                 if (tile == 2) {
                     int x = col * tileSize;
                     int y = row * tileSize;
-                    enemies.push_back(Enemy("Zombie", 50, 10, 2, x, y));
+                    enemies.push_back(Enemy("Zombie", 50, 10, 10, x, y));
                 } else if (tile == 3) {
                     doorX = col * tileSize;
                     doorY = row * tileSize;

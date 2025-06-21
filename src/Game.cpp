@@ -136,17 +136,17 @@ void Game::run(){
             }
         }
 
+        renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
+        map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, sprites.doorTexture, 64);
 
         // Update enemies
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {
                 enemy.update(player, map.getMap(), 64);
-                
+                //cout << enemy.toString() << " " << enemy.getHealthDisplay() << endl;
+                enemy.displayHealth(renderer.getRenderer());
             }
         }
-
-        renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
-        map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, sprites.doorTexture, 64);
 
         // Animation update
         if (player.attackAnimation.currentFrame >= 0) {
@@ -181,23 +181,16 @@ void Game::run(){
             if (enemy.wasAttacked && enemy.hurtAnimation.currentFrame >= 3) {
                 enemy.hurtAnimation.currentFrame = -1;
                 enemy.wasAttacked = 0;
-            } else if (enemy.wasAttacked && enemy.hurtAnimation.currentFrame <= 3) {
+            }
+            else if (enemy.wasAttacked && enemy.hurtAnimation.currentFrame <= 3) {
                 enemy.hurtAnimation.update();
                 renderer.drawSprite(enemy.hurtAnimation.getCurrentTexture(), enemy.getX(), enemy.getY(), 46, 30, true);
-            } else {
+            }
+            else {
                 enemy.idleAnimation.update();
                 renderer.drawSprite(enemy.idleAnimation.getCurrentTexture(), enemy.getX(), enemy.getY(), 46, 30, true);
             }
         }
-        
-
-        renderer.present();
-        frameTime = SDL_GetTicks() - frameStart;
-
-        if (frameDelay > frameTime) {
-            SDL_Delay(frameDelay - frameTime);
-        }
-
 
         // Clean up dead enemies
         enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
@@ -230,11 +223,11 @@ void Game::run(){
                     int upgradeCode = upgradeMenu.run();
                     if (upgradeCode == 2) {
                         //std::cout << "Upgrading attack " << player.getAttackPower();
-                        player.setAttackPower(player.getAttackPower() + 1);
+                        player.setAttackPower(player.getAttackPower() + 2);
                         //std::cout << " -> " << player.getAttackPower() << std::endl;
                     } else if(upgradeCode == 3) {
                         //std::cout << "Upgrading max health " << player.getMaxHealth();
-                        player.setMaxHealth(player.getMaxHealth() + 10);
+                        player.setMaxHealth(player.getMaxHealth() + 25);
                         //std::cout << " -> " << player.getMaxHealth() << std::endl;
                     }
 
@@ -246,7 +239,7 @@ void Game::run(){
                     loadEnemies();
 
                     player.setPosition(64, 64); // reset player position if 
-                    player.heal(20);
+                    player.heal(50);
                     userInput.reset(); // reset userInput to prevent movement bugs after entering a new room
                 }
             }

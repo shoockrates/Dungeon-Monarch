@@ -44,6 +44,7 @@ public:
     std::string toString() const;
     SDL_FRect getEnemyRect() const;
     void displayHealth(SDL_Renderer* renderer);
+    bool canAttack() const;
 
     // AI methods
     void update(Player& player, const std::vector<std::vector<int>>& map, int tileSize);
@@ -98,6 +99,9 @@ private:
 
     Uint32 lastAttackTime;
     Uint32 attackCooldown;
+
+    Uint32 initialCooldown = 2000; // 2 seconds = 2000ms
+    bool initialCooldownPassed = false;
 
     // AI variables
     Uint32 lastMoveTime;

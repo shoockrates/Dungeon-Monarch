@@ -8,6 +8,7 @@
 #include <cmath>
 #include <SDL3/SDL.h>
 #include "../../include/UI/UIElement.h"
+#include <iostream>
 
 int Enemy::enemyCount = 0;
 
@@ -22,7 +23,7 @@ Enemy::Enemy(const std::string& n, int hp, int atk, int spd, int startX, int sta
 }
 
 Enemy::~Enemy() {
-    delete healthDisplay;
+    healthDisplay = nullptr;
     enemyCount--;
 }
 
@@ -108,16 +109,16 @@ void Enemy::moveRandomly(const std::vector<std::vector<int>>& map, int tileSize)
 
     switch (direction) {
     case 0: 
-        dy += 2;
+        dy += speed;
         break;
     case 1: 
-        dy -= 2;
+        dy -= speed;
         break;
     case 2: 
-        dx -= 2;
+        dx -= speed;
         break;
     case 3: 
-        dx += 2;
+        dx += speed;
         break;
     }
 
@@ -162,6 +163,17 @@ void Enemy::tryMoveAxis(int dx, int dy, const std::vector<std::vector<int>>& map
             moveY(dy);
             //x = newX;  y = newY;
         }
+    }
+}
+
+bool Enemy::canAttack() const {
+    Uint32 currentTime = SDL_GetTicks();
+    Uint32 timeSinceLastAttack = currentTime - lastAttackTime;
+    if (!initialCooldownPassed) {
+        return timeSinceLastAttack >= initialCooldown;
+    }
+    else {
+        return timeSinceLastAttack >= attackCooldown;
     }
 }
 
@@ -233,11 +245,13 @@ void Enemy::init(const std::string& n, int hp, int atk, int spd, int startX, int
 }
 
 void Enemy::attack(Player& player) {
-    Uint32 currentTime = SDL_GetTicks();
-    if (currentTime - lastAttackTime > attackCooldown) {
-        player.takeDamage(attackPower);
-        lastAttackTime = currentTime;
-        //std::cout << name << " attacks " << player.getName() << " for " << attackPower << " damage!\n";
+    if (canAttack()){
+        Uint32 currentTime = SDL_GetTicks();
+        if (currentTime - lastAttackTime > attackCooldown) {
+            player.takeDamage(attackPower);
+            lastAttackTime = currentTime;
+            //std::cout << name << " attacks " << player.getName() << " for " << attackPower << " damage!\n";
+        }
     }
 }
 

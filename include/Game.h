@@ -102,7 +102,7 @@ private:
 
     bool running = true;
 
-    Player player = Player("Placeholder", 1000, 10, 5, 64, 64);
+    Player player = Player("Player", 250, 10, 5, 64, 64);
     Renderer renderer = Renderer(Room::getWidth(), Room::getHeight(), Room::getTileSize());
     SaveManager saveManager{renderer.getRenderer()};
     StartMenu startMenu{renderer.getRenderer(), &saveManager};
