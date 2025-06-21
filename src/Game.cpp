@@ -10,31 +10,47 @@ Game::Game() {
         sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
         sprites.groundTexture = renderer.loadSprite("assets/ground.bmp");
         sprites.doorTexture = renderer.loadSprite("assets/door.bmp");
-        sprites.enemyTexture = renderer.loadSprite("assets/zombie.bmp");
+        //sprites.enemyTexture = renderer.loadSprite("assets/zombie.bmp");
         sprites.playerTexture = renderer.loadSprite("assets/attack.bmp");
+    
+        player.attackAnimation.currentFrame = -1;
+
+        for(int i = 0; i <= 7; ++i) {
+            std::string path = "assets/player/walk/walk-" + std::to_string(i) + ".png";
+            SDL_Texture* tex = renderer.loadSpritePNG(path);
+            player.walkAnimation.frames.push_back(tex);
+        }
+        
+        for(int i = 0; i <= 5; ++i) {
+            std::string path = "assets/player/attack/attack-" + std::to_string(i) + ".png";
+            SDL_Texture* tex = renderer.loadSpritePNG(path);
+            player.attackAnimation.frames.push_back(tex);
+        }
+
+        for(int i = 0; i <= 5; ++i) {
+            std::string path = "assets/player/idle/idle-" + std::to_string(i) + ".png";
+            SDL_Texture* tex = renderer.loadSpritePNG(path);
+            player.idleAnimation.frames.push_back(tex);
+        }
+
+        for (auto& enemy : enemies) {
+            enemy.hurtAnimation.currentFrame = -1;
+            enemy.wasAttacked = 0;
+            for(int i = 0; i <= 3; ++i) {
+                std::string path = "assets/enemy/hurt/hurt-" + std::to_string(i) + ".png";
+                SDL_Texture* tex = renderer.loadSpritePNG(path);
+                enemy.hurtAnimation.frames.push_back(tex);
+            }
+            SDL_Texture* tex = renderer.loadSpritePNG("assets/enemy/idle/idle.png");
+            enemy.idleAnimation.frames.push_back(tex);
+        }
+
     }
     catch (const std::exception& e) {
         SDL_Log("Sprite loading failed: %s", e.what());
         running = false;
     }
-    
-    for(int i = 0; i <= 7; ++i) {
-        std::string path = "assets/player/walk/walk-" + std::to_string(i) + ".png";
-        SDL_Texture* tex = renderer.loadSpritePNG(path);
-        player.walkAnimation.frames.push_back(tex);
-    }
-    
-    for(int i = 0; i <= 5; ++i) {
-        std::string path = "assets/player/attack/attack-" + std::to_string(i) + ".png";
-        SDL_Texture* tex = renderer.loadSpritePNG(path);
-        player.attackAnimation.frames.push_back(tex);
-    }
 
-    for(int i = 0; i <= 5; ++i) {
-        std::string path = "assets/player/idle/idle-" + std::to_string(i) + ".png";
-        SDL_Texture* tex = renderer.loadSpritePNG(path);
-        player.idleAnimation.frames.push_back(tex);
-    }
 
     //enemies.push_back(Enemy("Zombie", 50, 10, 2, 300, 200));
     //enemies.push_back(Enemy("Zombie", 50, 10, 2, 500, 400));
@@ -58,7 +74,6 @@ void Game::run(){
 	if (!startMenu.run()) {
 		running = false;
 	}
-    player.attackAnimation.currentFrame = -1;
 
 	while (running) {
 		frameStart = SDL_GetTicks();
@@ -121,8 +136,16 @@ void Game::run(){
         }
 
         for (auto& enemy : enemies) {
-            if (enemy.isAlive()) {
-                renderer.drawSprite(sprites.enemyTexture, enemy.getX(), enemy.getY(), 64, 64);
+            // Enemy animation
+            if (enemy.wasAttacked && enemy.hurtAnimation.currentFrame >= 3) {
+                enemy.hurtAnimation.currentFrame = -1;
+                enemy.wasAttacked = 0;
+            } else if (enemy.wasAttacked && enemy.hurtAnimation.currentFrame <= 3) {
+                enemy.hurtAnimation.update();
+                renderer.drawSprite(enemy.hurtAnimation.getCurrentTexture(), enemy.getX(), enemy.getY(), 46, 30, true);
+            } else {
+                enemy.idleAnimation.update();
+                renderer.drawSprite(enemy.idleAnimation.getCurrentTexture(), enemy.getX(), enemy.getY(), 46, 30, true);
             }
         }
 
@@ -132,10 +155,10 @@ void Game::run(){
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);
         }
+
         // Clean up dead enemies
         enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
         [](const Enemy& e) { return !e.isAlive(); }), enemies.end());
-
 
         // Check for door entry only if no enemies left
         if (enemies.empty()) {
@@ -195,7 +218,7 @@ void Game::handleEvents() {
             if (intersects(attackRect, enemy.getEnemyRect())) {
                 //cout << "Attempting to attack enemy: " << enemy.toString() << endl;
                 player.attack(enemy);
-                
+                enemy.wasAttacked = true;
             }
         }
         //cout << "Left mouse was clicked " << player.toString() << endl;
