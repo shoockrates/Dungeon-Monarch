@@ -48,6 +48,31 @@ public:
     // AI methods
     void update(Player& player, const std::vector<std::vector<int>>& map, int tileSize);
 
+    struct Animation {
+        std::vector<SDL_Texture*> frames;
+        int currentFrame = 0;
+        int frameTime = 100; // ms
+        Uint64 lastUpdate = 0;
+        bool animationRunning = 0;
+
+        void update() {
+            Uint64 now = SDL_GetTicks();
+            if (now - lastUpdate >= frameTime) {
+                currentFrame = (currentFrame + 1) % frames.size();
+                lastUpdate = now;
+            }
+        }
+
+        SDL_Texture* getCurrentTexture() const {
+            return frames[currentFrame];
+        }
+    };
+
+    // bool facingRight;
+    bool wasAttacked;
+    Animation hurtAnimation;
+    Animation idleAnimation;
+
 private:
     bool isPlayerInRange(const Player& player) const;
     void moveRandomly(const std::vector<std::vector<int>>& map, int tileSize);

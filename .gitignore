@@ -1,3 +1,7 @@
 .vscode
 makefile
 SDL3
+.DS_Store
+assets/.DS_Store
+build/
+test

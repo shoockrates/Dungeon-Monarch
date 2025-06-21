@@ -21,23 +21,52 @@ Game::Game() {
         sprites.playerTexture = renderer.loadSprite("assets/knight.bmp");
         sprites.groundTexture = renderer.loadSprite("assets/ground.bmp");
         sprites.doorTexture = renderer.loadSprite("assets/door.bmp");
-        sprites.enemyTexture = renderer.loadSprite("assets/zombie.bmp");
+        //sprites.enemyTexture = renderer.loadSprite("assets/zombie.bmp");
         sprites.playerTexture = renderer.loadSprite("assets/attack.bmp");
+    
+        player.attackAnimation.currentFrame = -1;
+
+        for(int i = 0; i <= 7; ++i) {
+            std::string path = "assets/player/walk/walk-" + std::to_string(i) + ".png";
+            SDL_Texture* tex = renderer.loadSpritePNG(path);
+            player.walkAnimation.frames.push_back(tex);
+        }
+        
+        for(int i = 0; i <= 5; ++i) {
+            std::string path = "assets/player/attack/attack-" + std::to_string(i) + ".png";
+            SDL_Texture* tex = renderer.loadSpritePNG(path);
+            player.attackAnimation.frames.push_back(tex);
+        }
+
+        for(int i = 0; i <= 5; ++i) {
+            std::string path = "assets/player/idle/idle-" + std::to_string(i) + ".png";
+            SDL_Texture* tex = renderer.loadSpritePNG(path);
+            player.idleAnimation.frames.push_back(tex);
+        }
+
+        for (auto& enemy : enemies) {
+            enemy.hurtAnimation.currentFrame = -1;
+            enemy.wasAttacked = 0;
+            for(int i = 0; i <= 3; ++i) {
+                std::string path = "assets/enemy/hurt/hurt-" + std::to_string(i) + ".png";
+                SDL_Texture* tex = renderer.loadSpritePNG(path);
+                enemy.hurtAnimation.frames.push_back(tex);
+            }
+            SDL_Texture* tex = renderer.loadSpritePNG("assets/enemy/idle/idle.png");
+            enemy.idleAnimation.frames.push_back(tex);
+        }
+
     }
     catch (const std::exception& e) {
         SDL_Log("Sprite loading failed: %s", e.what());
         running = false;
     }
-    for(int i = 1; i < 12; ++i) {
-        std::string path = "assets/player/walk/walk-with-weapon-" + std::to_string(i) + ".png";
-        SDL_Texture* tex = renderer.loadSpritePNG(path);
-        player.walkAnimation.frames.push_back(tex);
-    }
-    for(int i = 1; i < 7; ++i) {
-        std::string path = "assets/player/idle/idle-with-weapon-" + std::to_string(i) + ".png";
-        SDL_Texture* tex = renderer.loadSpritePNG(path);
-        player.idleAnimation.frames.push_back(tex);
-    }
+
+
+
+    //enemies.push_back(Enemy("Zombie", 50, 10, 2, 300, 200));
+    //enemies.push_back(Enemy("Zombie", 50, 10, 2, 500, 400));
+
 }
 
 Game::~Game() {
@@ -129,29 +158,58 @@ void Game::run(){
         renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
         map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, sprites.doorTexture, 64);
 
-        // if player moves update animation
-        if (userInput.isDPressed() || userInput.isAPressed()) {
+        // Animation update
+        if (player.attackAnimation.currentFrame >= 0) {
+            if (player.attackAnimation.currentFrame >= 5) {
+                player.attackAnimation.currentFrame = -1;
+                player.attackAnimation.animationRunning = 0;
+            } else {
+                player.attackAnimation.update();
+            }
+        } else if (userInput.isDPressed() || userInput.isAPressed()) {
             player.walkAnimation.update();
+        } else {
+            player.idleAnimation.update();
         }
 
         if (userInput.isDPressed()) {
             player.facingRight = true;
-            renderer.drawSprite(player.walkAnimation.getCurrentTexture(), player.getX(), player.getY(), 64, 64);
         } else if (userInput.isAPressed()) {
             player.facingRight = false;
-            renderer.drawSprite(player.walkAnimation.getCurrentTexture(), player.getX(), player.getY(), 64, 64, true);
-        } else {
-            renderer.drawSprite(player.idleAnimation.getCurrentTexture(), player.getX(), player.getY(), 64, 64, !player.facingRight);
         }
-        
+        // Animation
+        if (player.attackAnimation.currentFrame >= 0 && player.attackAnimation.currentFrame <= 5) {
+            renderer.drawSprite(player.attackAnimation.getCurrentTexture(), player.getX(), player.getY(), 68, 54, !player.facingRight);
+        } if (userInput.isDPressed() || userInput.isAPressed()) {
+            renderer.drawSprite(player.walkAnimation.getCurrentTexture(), player.getX(), player.getY(), 68, 54, !player.facingRight);
+        } else {
+            renderer.drawSprite(player.idleAnimation.getCurrentTexture(), player.getX(), player.getY(), 68, 54, !player.facingRight);
+        }
 
         for (auto& enemy : enemies) {
-            if (enemy.isAlive()) {
-                renderer.drawSprite(sprites.enemyTexture, enemy.getX(), enemy.getY(), 64, 64);
-                enemy.displayHealth(renderer.getRenderer());
+
+            // Enemy animation
+            if (enemy.wasAttacked && enemy.hurtAnimation.currentFrame >= 3) {
+                enemy.hurtAnimation.currentFrame = -1;
+                enemy.wasAttacked = 0;
+            } else if (enemy.wasAttacked && enemy.hurtAnimation.currentFrame <= 3) {
+                enemy.hurtAnimation.update();
+                renderer.drawSprite(enemy.hurtAnimation.getCurrentTexture(), enemy.getX(), enemy.getY(), 46, 30, true);
+            } else {
+                enemy.idleAnimation.update();
+                renderer.drawSprite(enemy.idleAnimation.getCurrentTexture(), enemy.getX(), enemy.getY(), 46, 30, true);
+
             }
         }
         
+
+        renderer.present();
+        frameTime = SDL_GetTicks() - frameStart;
+
+        if (frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime);
+        }
+
 
         // Clean up dead enemies
         enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
@@ -234,12 +292,17 @@ void Game::handleEvents() {
 	if (userInput.isDPressed()) {
 		player.moveWithCollision(player.getSpeed(), 0, map.getMap(), 64);
 	}
-    if (userInput.isMouseLeftPressed()) {
+
+    // Attack enemies and if the areas intersect, do damage
+    if (userInput.isMouseLeftPressed() && !player.attackAnimation.animationRunning) {
+        player.attackAnimation.currentFrame = 0; // set for animation
+        player.attackAnimation.animationRunning = 1;
+
         SDL_FRect attackRect = player.getAttackArea();
         for (auto& enemy : enemies) {
             if (intersects(attackRect, enemy.getEnemyRect())) {
                 player.attack(enemy);
-                renderer.drawSprite(sprites.meleeAttackTexture, (attackRect.x), (attackRect.y), (attackRect.w), (attackRect.h));
+                enemy.wasAttacked = true;
             }
         }
     }
