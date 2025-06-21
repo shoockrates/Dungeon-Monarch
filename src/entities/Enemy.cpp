@@ -54,6 +54,18 @@ void Enemy::update(Player& player, const std::vector<std::vector<int>>& map, int
     }
 }
 
+bool Enemy::canAttack() const {
+    Uint32 currentTime = SDL_GetTicks();
+    Uint32 timeSinceLastAttack = currentTime - lastAttackTime;
+
+    if (!initialCooldownPassed) {
+        return timeSinceLastAttack >= initialCooldown;
+    }
+    else {
+        return timeSinceLastAttack >= attackCooldown;
+    }
+}
+
 bool Enemy::isFollowTrigger(Player& player) {
     int dx = player.getX() - x;
     int dy = player.getY() - y;
@@ -108,16 +120,16 @@ void Enemy::moveRandomly(const std::vector<std::vector<int>>& map, int tileSize)
 
     switch (direction) {
     case 0: 
-        dy += 2;
+        dy += speed;
         break;
     case 1: 
-        dy -= 2;
+        dy -= speed;
         break;
     case 2: 
-        dx -= 2;
+        dx -= speed;
         break;
     case 3: 
-        dx += 2;
+        dx += speed;
         break;
     }
 
@@ -233,11 +245,13 @@ void Enemy::init(const std::string& n, int hp, int atk, int spd, int startX, int
 }
 
 void Enemy::attack(Player& player) {
-    Uint32 currentTime = SDL_GetTicks();
-    if (currentTime - lastAttackTime > attackCooldown) {
-        player.takeDamage(attackPower);
-        lastAttackTime = currentTime;
-        //std::cout << name << " attacks " << player.getName() << " for " << attackPower << " damage!\n";
+    if (canAttack()) {
+        Uint32 currentTime = SDL_GetTicks();
+        if (currentTime - lastAttackTime > attackCooldown) {
+            player.takeDamage(attackPower);
+            lastAttackTime = currentTime;
+            //std::cout << name << " attacks " << player.getName() << " for " << attackPower << " damage!\n";
+        }
     }
 }
 

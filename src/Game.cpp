@@ -147,17 +147,16 @@ void Game::run(){
         }
 
 
+        renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
+        map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, sprites.doorTexture, 64);
+
         // Update enemies
         for (auto& enemy : enemies) {
             if (enemy.isAlive()) {
                 enemy.update(player, map.getMap(), 64);
-                
+
             }
         }
-
-        renderer.drawRoomTiled(sprites.tileTexture, room.getWidth(), room.getHeight(), room.getTileSize());
-        map.renderMap(renderer.getSDLRenderer(), sprites.tileTexture, sprites.groundTexture, sprites.doorTexture, 64);
-
         // Animation update
         if (player.attackAnimation.currentFrame >= 0) {
             if (player.attackAnimation.currentFrame >= 5) {
@@ -198,26 +197,22 @@ void Game::run(){
             } else {
                 enemy.idleAnimation.update();
                 renderer.drawSprite(enemy.idleAnimation.getCurrentTexture(), enemy.getX(), enemy.getY(), 46, 30, true);
-
             }
+            enemy.displayHealth(renderer.getRenderer());
         }
-        
-
-        renderer.present();
-        frameTime = SDL_GetTicks() - frameStart;
-
-        if (frameDelay > frameTime) {
-            SDL_Delay(frameDelay - frameTime);
-        }
-
 
         // Clean up dead enemies
         enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
         [](const Enemy& e) { return !e.isAlive(); }), enemies.end());
 
+        for (const auto& enemy : enemies) {
+           std::cout << "Enemy info: " << enemy.toString() << std::endl;
+       }
+
         // Check for door entry only if no enemies left
         if (enemies.empty()) {
 
+          
             int playerTileX = player.getX() / 64;
             int playerTileY = player.getY() / 64;
             int doorTileX = map.doorX / 64;
@@ -241,13 +236,14 @@ void Game::run(){
                 } else {
                     int upgradeCode = upgradeMenu.run();
                     if (upgradeCode == 2) {
-                        //std::cout << "Upgrading attack " << player.getAttackPower();
+                        std::cout << "Upgrading attack " << player.getAttackPower();
                         player.setAttackPower(player.getAttackPower() + 1);
-                        //std::cout << " -> " << player.getAttackPower() << std::endl;
-                    } else if(upgradeCode == 3) {
-                        //std::cout << "Upgrading max health " << player.getMaxHealth();
+                        std::cout << " -> " << player.getAttackPower() << std::endl;
+                    }
+                    else if (upgradeCode == 3) {
+                        std::cout << "Upgrading max health " << player.getMaxHealth();
                         player.setMaxHealth(player.getMaxHealth() + 10);
-                        //std::cout << " -> " << player.getMaxHealth() << std::endl;
+                        std::cout << " -> " << player.getMaxHealth() << std::endl;
                     }
 
 
@@ -272,7 +268,6 @@ void Game::run(){
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);
         }
-
     }
 }
 void Game::loadMenu() {};
