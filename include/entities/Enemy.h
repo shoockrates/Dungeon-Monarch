@@ -77,6 +77,15 @@ private:
     bool isPlayerInRange(const Player& player) const;
     void moveRandomly(const std::vector<std::vector<int>>& map, int tileSize);
 
+    // AI helper methods
+    bool isFollowTrigger(Player& player);
+    void setFollowingTrigger(bool followTrigger);
+    void moveX(int dx);
+    void moveY(int dy);
+    void followPlayer(const Player& player, const std::vector<std::vector<int>>& map, int tileSize);
+    void moveWithCollision(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize);
+    void tryMoveAxis(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize, int width, int height);
+
     std::string name;
     int health;
     int attackPower;
@@ -93,6 +102,7 @@ private:
     // AI variables
     Uint32 lastMoveTime;
     Uint32 moveCooldown;
+    bool isFollowingPlayer = false;
 };
 
 #endif // ENEMY_H

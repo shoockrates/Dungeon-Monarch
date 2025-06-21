@@ -35,14 +35,36 @@ void Enemy::setName(const std::string& name) {
 void Enemy::update(Player& player, const std::vector<std::vector<int>>& map, int tileSize) {
     Uint32 currentTime = SDL_GetTicks();
 
+    if(isFollowTrigger(player) && !this->isFollowingPlayer) {
+        this->isFollowingPlayer = true;
+    }
+
     if (isPlayerInRange(player)) {
         attack(player);
+        
     }
-    else if (currentTime - lastMoveTime > moveCooldown) {
-        moveRandomly(map, tileSize);
+    else if ((currentTime - lastMoveTime > moveCooldown)) {
+        //moveRandomly(map, tileSize);
+        if(this->isFollowingPlayer){
+            followPlayer(player, map, tileSize);
+        } else {
+            moveRandomly(map, tileSize);
+        }
         lastMoveTime = currentTime;
     }
 }
+
+bool Enemy::isFollowTrigger(Player& player) {
+    int dx = player.getX() - x;
+    int dy = player.getY() - y;
+    float distance = std::sqrt(dx * dx + dy * dy);
+    return distance < 192; // 3 tiles range
+}
+
+void Enemy::setFollowingTrigger(bool followTrigger) {
+    this->isFollowingPlayer = followTrigger;
+}
+
 
 void Enemy::setHealth(int health) {
     // Ensure health is at least 1
@@ -77,32 +99,81 @@ bool Enemy::isPlayerInRange(const Player& player) const {
     int dx = player.getX() - x;
     int dy = player.getY() - y;
     float distance = std::sqrt(dx * dx + dy * dy);
-    return distance < 64; // 1 tile range
+    return distance < 96; // 1,5 tile range
 }
 
 void Enemy::moveRandomly(const std::vector<std::vector<int>>& map, int tileSize) {
     int direction = rand() % 4;
-    int originalX = x;
-    int originalY = y;
+    int dx = 0, dy = 0;
 
     switch (direction) {
-    case 0: moveUp(); break;
-    case 1: moveDown(); break;
-    case 2: moveLeft(); break;
-    case 3: moveRight(); break;
+    case 0: 
+        dy += 2;
+        break;
+    case 1: 
+        dy -= 2;
+        break;
+    case 2: 
+        dx -= 2;
+        break;
+    case 3: 
+        dx += 2;
+        break;
     }
 
-    int tileX = x / tileSize;
-    int tileY = y / tileSize;
+    moveWithCollision(dx, dy, map, tileSize);
+}
 
-    if (tileX < 0 || tileY < 0 ||
-        tileY >= (int)map.size() ||
-        tileX >= (int)map[0].size() ||
-        map[tileY][tileX] != 1) {
-        x = originalX;
-        y = originalY;
+void Enemy::followPlayer(const Player& player, const std::vector<std::vector<int>>& map, int tileSize) {
+    int dx = (player.getX() > x) ? speed : (player.getX() < x ? -speed : 0);
+    int dy = (player.getY() > y) ? speed : (player.getY() < y ? -speed : 0);
+    moveWithCollision(dx, dy, map, tileSize);
+}
+
+void Enemy::moveWithCollision(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize) {
+    int w = 64;
+    int h = 64;
+
+    // horizontal then vertical
+    tryMoveAxis(dx, 0, map, tileSize, w, h);
+    tryMoveAxis(0, dy, map, tileSize, w, h);
+}
+
+void Enemy::tryMoveAxis(int dx, int dy, const std::vector<std::vector<int>>& map, int tileSize, int width, int height) {
+    int newX = x + dx;
+    int newY = y + dy;
+
+    int leftTile = newX / tileSize;
+    int rightTile = (newX + width - 1) / tileSize;
+    int topTile = newY / tileSize;
+    int bottomTile = (newY + height - 1)/ tileSize;
+
+    if (topTile >= 0 && bottomTile < (int)map.size() &&
+        leftTile >= 0 && rightTile < (int)map[0].size())
+    {
+        bool canMove =
+            map[topTile][leftTile]  != 0 &&
+            map[topTile][rightTile] != 0 &&
+            map[bottomTile][leftTile]  != 0 &&
+            map[bottomTile][rightTile] != 0;
+
+        if (canMove) {
+            moveX(dx);
+            moveY(dy);
+            //x = newX;  y = newY;
+        }
     }
 }
+
+void Enemy::moveX(int dx) {
+    x += dx;
+    enemyRect.x += dx;
+}
+void Enemy::moveY(int dy) {
+    y += dy;
+    enemyRect.y += dy;
+}
+
 
 void Enemy::setSpeed(int speed) {
     // Ensure speed is at least 1
