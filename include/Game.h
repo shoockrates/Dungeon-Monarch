@@ -15,6 +15,8 @@
 #include "utilities/MathUtils.h"
 #include "UI/UIElement.h"
 
+#include <string>
+
 #include "Map.h"
 #include <vector>
 /*
@@ -29,7 +31,7 @@
 
 class Game {
 public:
-    Game();
+    Game(const std::string& name );
     ~Game();
 
     /**
